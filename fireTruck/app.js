@@ -116,6 +116,48 @@ function setup(shaders) {
 
     let u_color = gl.getUniformLocation(program, "u_color");
 
+    //-------FireTruck-------// 
+
+    function floor() {
+        //Stretch cube on the floor?
+        //Base of the Truck
+    }
+
+    function wheel() {
+        //Torus plus cylinders for the  rim
+        //Spin on the x axis and sync with the translation (car movement)
+    }
+
+    function wheelConnector() {
+        //Cylinder connecting two wheels
+    }
+
+    function chassis() {
+        //Stretch cube on top of the wheel connectorsa
+    }
+
+    function bumper() {
+        //Stretch cube to be on the side of the chassis
+    }
+
+    function cabin() {
+        //Stretch cube on top of the shassis
+    }
+
+    function waterTank() {
+        //Stretch cube on top of the shassis
+    }
+
+    function stairBase() {
+        //Stretch cube on top of the waterTank (rotates)
+    }
+
+    function stairs() {
+        //Stretch cube on top of the stair base
+    }
+
+    //-------FireTruck-------// 
+
     function tabel(color) {
         multScale([25, 0.1, 10]);
         multTranslation([0, -24.7, 0.5]);
@@ -264,12 +306,13 @@ function setup(shaders) {
         multTranslation([0, 1, 0]);
         head();
 
-
-
-
-
-
-
+        //-------FireTruck-------// 
+        /**
+         * pushMatrix();
+         * floor();
+         * popMatrix();
+         */
+        //-------FireTruck-------// 
 
     }
 }
