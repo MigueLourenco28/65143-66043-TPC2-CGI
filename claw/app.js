@@ -241,25 +241,25 @@ function setup(shaders) {
 
         // Scene graph traversal code goes here...
         pushMatrix();
-        tabel(vec4(0.3, 0.3, 0.3, 1));
+            tabel(vec4(0.3, 0.3, 0.3, 1));
         popMatrix();
         multTranslation([0, -2, 2.5]);
         pushMatrix();
-        base(vec4(1, 0, 0, 1));
+            base(vec4(1, 0, 0, 1));
         popMatrix();
-        multRotationY(rotParte3)
+            multRotationY(rotParte3)
         pushMatrix();
-        parte3();
+            parte3();
         popMatrix();
         multTranslation([0, 0.7, 0]);
         multRotationZ(rotParte2);
         pushMatrix();
-        parte2()
+            parte2()
         popMatrix();
-        multTranslation([0, 1, 0])
-        multRotationZ(rotParte1);
+            multTranslation([0, 1, 0])
+            multRotationZ(rotParte1);
         pushMatrix();
-        parte1();
+            parte1();
         popMatrix();
         multTranslation([0, 1, 0]);
         head();
