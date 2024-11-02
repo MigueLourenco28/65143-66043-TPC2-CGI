@@ -148,20 +148,20 @@ function setup(shaders) {
         //Stretch cube on top of the shassis
     }
 
-    function stairRotation() {
+    function stairBaseRotation() {
         //Stretch cube on top of the waterTank (rotates)
     }
 
-    function stairElevation() {
+    function stairBaseElevation() {
         //Cube stays in place
         //lower and upper stairs elevate
     }
 
-    function lowerStairs() {
+    function lowerStair() {
         //Stair that stays in place
     }
 
-    function upperStairs() {
+    function upperStair() {
         //Stair that extends
     }
 
@@ -320,6 +320,56 @@ function setup(shaders) {
          * pushMatrix();
          * floor();
          * popMatrix();
+         * pushMatrix(); // FireTruck
+         * 
+         *  pushMatrix(); // Stationary Body
+         * 
+         *      chassis();
+         *      bumper();
+         *      cabin();
+         *      waterTank();
+         * 
+         *      pushMatrix(); // Moving Parts
+         *  
+         *          pushMatrix(); //Wheels
+         *              wheel();    
+         *              wheel();
+         *              wheel();
+         *              wheel();
+         *              wheelConnector();
+         *              wheelConnector();
+         *          popMatrix(); //Wheels
+         *          
+         *          pushMatrix() //Stairs
+         * 
+         *              pushMatrix(); // Rotation
+         *                  stairBaseRotation();
+         *                  
+         *                  pushMatrix(); // Elevation
+         *                      stairBaseElevation();
+         * 
+         *                      pushMatrix();
+         *                          lowerStair();
+         * 
+         *                          pushMatrix(); // Extension
+         *                              upperStair();
+         *                              extend();???
+         * 
+         *                          popMatrix(); // Extension
+         * 
+         *                      popMatrix();
+         * 
+         *                  popMatrix(); // Elevation
+         * 
+         *              popMatrix(); // Rotation
+         * 
+         *          popMatrix() // Stairs
+         * 
+         *      popMatrix(); // Moving Parts
+         * 
+         *  popMatrix(); // Stationary Body
+         * 
+         * popMatrix(); // FireTruck
          */
         //-------FireTruck-------// 
 
