@@ -16,8 +16,9 @@ let truckPos = 0;   // Position of truck in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the x axis
 let upperLadderPos = 0; // Position of the upper stairs 
+let view = 4; // View
 
-const VP_DISTANCE = 4; //colocar 4
+const VP_DISTANCE = 12;
 
 function moveTruck(direction) {
     switch (direction) {
@@ -100,6 +101,20 @@ function setup(shaders) {
             case 'p':
                 moveLadder(input);
                 break;
+            case '4':
+                view = input;
+                break;
+            case '3':
+                view = input;
+                break;
+            case '2':
+                view = input;
+                break;
+            case '1':
+                view = input;
+                break;
+            case '0':
+                view = input;
         }
     }
 
@@ -133,7 +148,7 @@ function setup(shaders) {
         //Stretch cube on the floor?
         //Base of the Truck
         const tileSize = 0.5; // Size of each tile
-        const gridSize = 5; // Total size of the floor grid
+        const gridSize = 25; // Total size of the floor grid
 
         for (let i = -gridSize; i < gridSize; i++) {
             for (let j = -gridSize; j < gridSize; j++) {
@@ -218,7 +233,23 @@ function setup(shaders) {
 
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_projection"), false, flatten(mProjection));
 
-        loadMatrix(lookAt([1.5, 1, VP_DISTANCE], [0, 0, 0], [0, 1, 0])); // mudar um bocado para os lados
+        switch (view) {
+            case '4':
+                loadMatrix(lookAt([8, 5, 15], [0, 0, 0], [0, 1, 0])); // axonometric projection
+                break;
+            case '3':
+                loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top view
+                break;
+            case '2':
+                loadMatrix(lookAt([10, 0, 0], [0, 0, 0], [0, 1, 0])); // Left view
+                break;
+            case '1':
+                loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0])); // Front view
+                break;
+            case '0':
+                loadMatrix(lookAt([0, 0, 0], [0, 0, 0], [0, 0, 1])); // Togle 1/4 views
+                break;
+        } 
 
         // Scene graph traversal code goes here...
         pushMatrix();
