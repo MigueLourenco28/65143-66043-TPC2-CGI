@@ -116,7 +116,7 @@ function setup(shaders) {
 
     let u_color = gl.getUniformLocation(program, "u_color");
 
-    //-------FireTruck-------// 
+    //-------FireTruck-------//
 
     function floor() {
         //Stretch cube on the floor?
@@ -133,7 +133,7 @@ function setup(shaders) {
     }
 
     function chassis() {
-        //Stretch cube on top of the wheel connectorsa
+        //Stretch cube on top of the wheel connectors
     }
 
     function bumper() {
@@ -148,12 +148,21 @@ function setup(shaders) {
         //Stretch cube on top of the shassis
     }
 
-    function stairBase() {
+    function stairRotation() {
         //Stretch cube on top of the waterTank (rotates)
     }
 
-    function stairs() {
-        //Stretch cube on top of the stair base
+    function stairElevation() {
+        //Cube stays in place
+        //lower and upper stairs elevate
+    }
+
+    function lowerStairs() {
+        //Stair that stays in place
+    }
+
+    function upperStairs() {
+        //Stair that extends
     }
 
     //-------FireTruck-------// 
