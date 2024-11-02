@@ -12,46 +12,51 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
-let rotParte1 = 0;
-let rotParte2 = 0;
-let rotParte3 = 0;
-let char = ' ';
+let truckPos = 0;   // Position of truck in the z axis
+let stairBaseAngle = 0; // Angle of the stair base in the y axis
+let ladderInclination = 0; // Angle of the ladder in the x axis
+let upperLadderPos = 0; // Position of the upper stairs 
 
 const VP_DISTANCE = 4; //colocar 4
 
-function switchRotMore(char) {
-    switch (char) {
-        case 'w':
-            if (rotParte1 < 120)
-                rotParte1++;
+function moveTruck(direction) {
+    switch (direction) {
+        case 'a':
+            truckPos += 0.1;
             break;
-        case 's':
-            if (rotParte2 < 45)
-                rotParte2++;
-            break;
-        case 'x':
-            rotParte3++;
+        case 'd':
+            truckPos -= 0.1;
             break;
     }
 }
 
-function switchRotLess(char) {
-
-    switch (char) {
-        case 'w':
-            if (rotParte1 > -120)
-                rotParte1--;
+function rotateStairBase(direction) {
+    switch (direction) {
+        case 'q':
+            stairBaseAngle += 1;
             break;
-        case 's':
-            if (rotParte2 > -45)
-                rotParte2--;
-            break;
-        case 'x':
-            rotParte3--;
+        case 'e':
+            stairBaseAngle -= 1;
             break;
     }
 }
 
+function moveLadder(direction) {
+    switch (direction) {
+        case 'w':
+            // TODO: Implement ladder movement
+            break;
+        case's':
+            // TODO: Implement ladder movement
+            break;
+        case 'o':
+            // TODO: Implement ladder movement
+            break;
+        case 'p':
+            // TODO: Implement ladder movement
+            break;
+    }
+}
 
 function setup(shaders) {
     let canvas = document.getElementById("gl-canvas");
@@ -69,25 +74,31 @@ function setup(shaders) {
     window.addEventListener("resize", resize_canvas);
 
     document.onkeydown = function (event) {
-        let rot;
-        switch (event.key) {
-            case 'w':
-                char = 'w';
-                break;
-            case 's':
-                char = 's';
-                break;
-            case 'x':
-                char = 'x';
-                break;
+        let input = event.key;
+        switch (input) {
             case 'a':
-                switchRotMore(char);
+                moveTruck(input);
                 break;
             case 'd':
-                switchRotLess(char);
+                moveTruck(input);
                 break;
-            case ' ':
-                animation = !animation;
+            case 'q':
+                rotateStairBase(input);
+                break;
+            case 'e':
+                rotateStairBase(input);
+                break;
+            case 'w':
+                moveLadder(input);
+                break;
+            case 's':
+                moveLadder(input);
+                break;
+            case 'o':
+                moveLadder(input);
+                break;
+            case 'p':
+                moveLadder(input);
                 break;
         }
     }
@@ -121,6 +132,27 @@ function setup(shaders) {
     function floor() {
         //Stretch cube on the floor?
         //Base of the Truck
+        const tileSize = 0.5; // Size of each tile
+        const gridSize = 5; // Total size of the floor grid
+
+        for (let i = -gridSize; i < gridSize; i++) {
+            for (let j = -gridSize; j < gridSize; j++) {
+                pushMatrix();
+            
+                // Alternate colors for the checkered pattern
+                let color = (i + j) % 2 === 0 ? vec4(0.8, 0.8, 0.8, 1) : vec4(0.2, 0.2, 0.2, 1);
+                gl.uniform4fv(u_color, color);
+            
+                // Position each tile
+                multTranslation([i * tileSize, -0.1, j * tileSize]);
+                multScale([tileSize, 0.05, tileSize]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                popMatrix();
+            }
+        }
     }
 
     function wheel() {
@@ -165,109 +197,7 @@ function setup(shaders) {
         //Stair that extends
     }
 
-    //-------FireTruck-------// 
-
-    function tabel(color) {
-        multScale([25, 0.1, 10]);
-        multTranslation([0, -24.7, 0.5]);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CUBE.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CUBE.draw(gl, program, gl.LINES);
-    }
-
-    function pinca(color) {
-        multScale([0.2, 0.7, 0.2]);
-        multTranslation([-1.15, 0.625, 0]);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CUBE.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CUBE.draw(gl, program, gl.LINES);
-
-    }
-
-    function baseHead(color) {
-        multScale([1, 0.25, 1]);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CYLINDER.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CYLINDER.draw(gl, program, gl.LINES);
-    }
-
-    function head() {
-        pushMatrix();
-        baseHead(vec4(0.5, 0.5, 0.5, 1));
-        popMatrix();
-        pushMatrix();
-        multTranslation([-time, 0, 0]);
-        pinca(vec4(1, 1, 0, 1));
-        popMatrix();
-        multTranslation([0.5, 0, 0]);
-        multTranslation([time, 0, 0]);
-        pinca(vec4(1, 1, 0, 1));
-    }
-
-
-    function poste(color) {
-        multScale([0.25, 1, 0.25]);
-        multTranslation([0, 0.5, 0]);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CUBE.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CUBE.draw(gl, program, gl.LINES);
-    }
-
-    function rot(color) {
-        multScale([0.25, 0.25, 0.26]);
-        multRotationX(90);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CYLINDER.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CYLINDER.draw(gl, program, gl.LINES);
-    }
-
-    function base(color) {
-        multScale([1, 1, 1]);
-        multScale([0.8, 0.25, 0.8]);
-        multTranslation([0, -1, 0]);
-        uploadModelView();
-        gl.uniform4fv(u_color, color);
-        CUBE.draw(gl, program, mode);
-        gl.uniform4fv(u_color, vec4(0, 0, 0, 1));
-        CUBE.draw(gl, program, gl.LINES);
-    }
-
-    function parte1() {
-        pushMatrix();
-        rot(vec4(0, 0, 1, 1));
-        popMatrix();
-        poste(vec4(1, 0, 0, 1));
-    }
-
-    function parte2() {
-        pushMatrix();
-        rot(vec4(1, 1, 0, 1));
-        popMatrix();
-        poste(vec4(1, 0, 0, 1));
-    }
-
-    function parte3() {
-        pushMatrix();
-        multScale([1.7, 1, 1.7]);
-        multRotationX(-90);
-        rot(vec4(0, 1, 0, 1));
-        popMatrix();
-        multScale([1, 0.7, 1]);
-        poste(vec4(1, 0, 0, 1));
-    }
-
-
-
+    //-------FireTruck-------//
 
     function render() {
         if (animation && time < 0.11) {
@@ -292,36 +222,10 @@ function setup(shaders) {
 
         // Scene graph traversal code goes here...
         pushMatrix();
-            tabel(vec4(0.3, 0.3, 0.3, 1));
+            floor();
         popMatrix();
-        multTranslation([0, -2, 2.5]);
-        pushMatrix();
-            base(vec4(1, 0, 0, 1));
-        popMatrix();
-            multRotationY(rotParte3)
-        pushMatrix();
-            parte3();
-        popMatrix();
-        multTranslation([0, 0.7, 0]);
-        multRotationZ(rotParte2);
-        pushMatrix();
-            parte2()
-        popMatrix();
-            multTranslation([0, 1, 0])
-            multRotationZ(rotParte1);
-        pushMatrix();
-            parte1();
-        popMatrix();
-        multTranslation([0, 1, 0]);
-        head();
-
-        //-------FireTruck-------// 
-        /**
-         * pushMatrix();
-         * floor();
-         * popMatrix();
-         * pushMatrix(); // FireTruck
-         * 
+        /** 
+         *pushMatrix(); // FireTruck
          *  pushMatrix(); // Stationary Body
          * 
          *      chassis();
@@ -339,7 +243,9 @@ function setup(shaders) {
          *              wheelConnector();
          *              wheelConnector();
          *          popMatrix(); //Wheels
-         *          
+         *          pushMatrix(); //Chassis
+         *              chassis();
+         *          popMatrix(); //Chassis
          *          pushMatrix() //Stairs
          * 
          *              pushMatrix(); // Rotation
@@ -369,7 +275,7 @@ function setup(shaders) {
          * 
          *  popMatrix(); // Stationary Body
          * 
-         * popMatrix(); // FireTruck
+         *popMatrix(); // FireTruck
          */
         //-------FireTruck-------// 
 
