@@ -1,14 +1,70 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="stylesheet" href="style.css">
-        <title>Exercício 18</title>
-        <script type="module" src="./app.js"></script>
-    </head>
-    <body>
-        <canvas id="gl-canvas" width="128" height="128">
-            Oops! Something went wrong!
-        </canvas>
-    </body>
-</html>
+<head>
+    <title>Projeto 02</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Ensure container is relative so the text and canvas can be positioned inside it */
+        .container {
+            position: relative;
+            width: 512px;
+            height: 512px;
+        }
 
+        /* Canvas should be positioned normally within the container */
+        #gl-canvas {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Text should be positioned absolutely on top of the canvas */
+        .text-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            color: white;
+            z-index: 2;
+        }
+
+        /* Optional: make text more visible */
+        h1 {
+            background-color: rgba(0, 0, 0, 0);
+            padding: 5px;
+            margin: 0;
+            font-size: 20px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <canvas id="gl-canvas" width="512" height="512"></canvas>
+        <div class="text-overlay">
+            <h1>-----------Option Menu-----------</h1>
+            <h1>'h' : Clear</h1>
+            <h1>'0' : Increase Segments</h1>
+            <h1>'1' : Lower Segments</h1>
+            <h1>'2' : Speed up</h1>
+            <h1>'3' : Slow down</h1>
+            <h1>'4' : Pause/Resume</h1>
+            <h1>' ' : Hide/Show control points</h1>
+            <h1>'q' : Hide/Show curves</h1>
+            <h1>'e' : Finish control points</h1>
+            <h1>'w' : Speed up</h1>
+            <h1>'s' : Speed up</h1>
+            <h1>'o' : Speed up</h1>
+            <h1>'p' : Speed up</h1>
+            <h1>'a' : Speed up</h1>
+            <h1>'d' : Speed up</h1>
+            <h1>'r' : Speed up</h1>
+            <h1>'ArrowLeft' : Speed up</h1>
+            <h1>'ArrowRight' : Speed up</h1>
+            <h1>'ArrowUp' : Speed up</h1>
+            <h1>'ArrowDown' : Speed up</h1>
+        </div>
+    </div>
+    <script type="module" src="./app.js"></script>
+</body>
+
+</html>
