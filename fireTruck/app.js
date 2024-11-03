@@ -13,9 +13,10 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
-let truckPos = 0;   // Position of truck in the z axis
+let truckPos = 0;   // Position of truck in the x axis
+let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
-let ladderInclination = 0; // Angle of the ladder in the x axis
+let ladderInclination = 0; // Angle of the ladder in the z axis
 let upperLadderPos = 0; // Position of the upper stairs 
 let view = 4; // View
 
@@ -25,9 +26,11 @@ function moveTruck(direction) {
     switch (direction) {
         case 'a':
             truckPos -= 0.1;
+            wheelAngle += 1;
             break;
         case 'd':
             truckPos += 0.1;
+            wheelAngle -= 1;
             break;
     }
 }
@@ -172,46 +175,102 @@ function setup(shaders) {
         }
     }
 
-    function wheels() {
+    function wheel() {
         //Torus plus cylinders for the  rim
         //Cylinder connecting two wheels
         //Spin on the x axis and sync with the translation (car movement)
+        
+        //Tire
         pushMatrix();
 
-        let color = vec4(0.1, 0.1, 0.1, 1.0);
+            let color = vec4(0.1, 0.1, 0.1, 1.0);
+            gl.uniform4fv(u_color, color);
+
+            uploadModelView();
+            TORUS.draw(gl, program, mode);
+
+        popMatrix();
+
+        //Rim
+        const numberOfSpokes = 20; // Increased density for spokes
+        const spokeRadius = 0.03;
+        const rimRadius = 0.5; // Slightly smaller than the tire radius
+
+        multRotationX(90);
+        for (let i = 0; i < numberOfSpokes; i++) {
+            pushMatrix();            
+                // Set color for the rim and spokes
+                gl.uniform4fv(u_color, vec4(0.5, 0.5, 0.5, 1.0)); // Gray color for the rim
+
+                // Rotate each spoke around the wheel center
+                const angle = (360 / numberOfSpokes) * i;
+                multRotationZ(angle);
+
+                // Position and scale each spoke from the center to the rim
+                multTranslation([rimRadius / 2, 0, 0]);
+                multScale([rimRadius, spokeRadius, spokeRadius]);
+
+                uploadModelView();
+                CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
+            popMatrix();
+        }   
+    }
+
+    function wheelConnector() {
+        pushMatrix();
+
+        let color = vec4(0.5, 0.5, 0.5, 1.0);
         gl.uniform4fv(u_color, color);
 
         uploadModelView();
-        TORUS.draw(gl, program, mode);
+        CYLINDER.draw(gl, program, mode);
 
         popMatrix();
     }
 
     function chassis() {
         //Stretch cube on top of the wheel connectors
+        //Wheels
         pushMatrix();
             multTranslation([-4.0, 0.65, 2.0]);
             multRotationY(90);
             multRotationZ(90);
-            wheels();
+            multRotationY(wheelAngle);
+            wheel();
         popMatrix();
         pushMatrix();
             multTranslation([-4.0, 0.65, -2.0]);
             multRotationY(90);
             multRotationZ(90);
-            wheels();
+            multRotationY(wheelAngle);
+            wheel();
         popMatrix();
         pushMatrix();
             multTranslation([4.0, 0.65, 2.0]);
             multRotationY(90);
             multRotationZ(90);
-            wheels();
+            multRotationY(wheelAngle);
+            wheel();
         popMatrix();
         pushMatrix();
             multTranslation([4.0, 0.65, -2.0]);
             multRotationY(90);
             multRotationZ(90);
-            wheels();
+            multRotationY(wheelAngle);
+            wheel();
+        popMatrix();
+        //Wheel connectors
+        pushMatrix();
+            multTranslation([4.0, 0.65, 0.0]);
+            multRotationX(90);
+            multScale([0.2, 4.0, 0.2]);
+            wheelConnector();
+        popMatrix();
+        pushMatrix();
+            multTranslation([-4.0, 0.65, 0.0]);
+            multRotationX(90);
+            multScale([0.2, 4.0, 0.2]);
+            wheelConnector();
         popMatrix();
     }
 
@@ -228,7 +287,8 @@ function setup(shaders) {
     }
 
     function stairBaseRotation() {
-        //Stretch cube on top of the waterTank (rotates)
+        //Shorten cylinder on top of the waterTank (rotates)
+
     }
 
     function stairBaseElevation() {
@@ -270,7 +330,7 @@ function setup(shaders) {
         CUBE.draw(gl, program, mode);
         popMatrix();
 
-    // Create and position each step
+        // Create and position each step
         for (let i = 2; i < ladderSteps; i++) {
             pushMatrix();
             multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);
