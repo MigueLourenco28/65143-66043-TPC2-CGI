@@ -204,7 +204,7 @@ function setup(shaders) {
         //lower and upper stairs elevate
     }
 
-    function lowerStair() {
+    function stair(thickness) {
     //Stair that stays in place
         const ladderSteps = 8 + 1; // Number of steps on the lower stair (change first number & ignore +1)
         const stepHeight = 0.1; // Height of each step
@@ -215,7 +215,7 @@ function setup(shaders) {
         // Create and position the left rail
         pushMatrix();
         multTranslation([stepWidth/2*-1, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+        multScale([thickness, ladderSteps * (stepHeight + stepSpacing), thickness]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
@@ -223,7 +223,7 @@ function setup(shaders) {
         // Create and position the right rail
         pushMatrix();
         multTranslation([stepWidth/2, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+        multScale([thickness, ladderSteps * (stepHeight + stepSpacing), thickness]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
@@ -287,7 +287,9 @@ function setup(shaders) {
             floor();
         popMatrix();
         pushMatrix();
-            lowerStair();
+            stair(0.1);
+            multTranslation([0, 0.1, 0.1]);
+            stair(0.1);
         popMatrix();
 
 
