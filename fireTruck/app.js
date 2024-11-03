@@ -202,9 +202,14 @@ function setup(shaders) {
     function stairBaseElevation() {
         //Cube stays in place
         //lower and upper stairs elevate
+        let color = vec4(0.3, 0.3, 0.3, 1);
+        gl.uniform4fv(u_color, color);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+
     }
 
-    function stair(thickness) {
+    function stair() {
     //Stair that stays in place
         const ladderSteps = 8 + 1; // Number of steps on the lower stair (change first number & ignore +1)
         const stepHeight = 0.1; // Height of each step
@@ -214,8 +219,10 @@ function setup(shaders) {
 
         // Create and position the left rail
         pushMatrix();
+        let color = vec4(0.3, 0.3, 0.3, 1);
+        gl.uniform4fv(u_color, color);
         multTranslation([stepWidth/2*-1, 0.0, 0.0]);
-        multScale([thickness, ladderSteps * (stepHeight + stepSpacing), thickness]);
+        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
@@ -223,7 +230,7 @@ function setup(shaders) {
         // Create and position the right rail
         pushMatrix();
         multTranslation([stepWidth/2, 0.0, 0.0]);
-        multScale([thickness, ladderSteps * (stepHeight + stepSpacing), thickness]);
+        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
@@ -287,9 +294,16 @@ function setup(shaders) {
             floor();
         popMatrix();
         pushMatrix();
-            stair(0.1);
-            multTranslation([0, 0.1, 0.1]);
-            stair(0.1);
+
+        stairBaseElevation(); //TODO how to translate to stair base?
+
+            pushMatrix();
+                multRotationX(70);
+                multTranslation([0,0,-4]);
+                stair();                         //lower stair
+                multTranslation([0, 0.1, -0.1]);
+                stair();                         //upper stair
+            popMatrix();
         popMatrix();
 
 
