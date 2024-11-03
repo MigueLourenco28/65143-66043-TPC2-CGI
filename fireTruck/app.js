@@ -205,7 +205,34 @@ function setup(shaders) {
     }
 
     function lowerStair() {
-        //Stair that stays in place
+    //Stair that stays in place
+        const ladderSteps = 5; // Number of steps on the lower stair
+        const stepHeight = 0.2; // Height of each step
+        const stepWidth = 1.0; // Width of each step
+        const stepDepth = 0.1; // Depth of each step
+
+        // Create and position the left rail
+        pushMatrix();
+        multTranslation([-0.5, 0.0, 0.0]);
+        multScale([0.1, ladderSteps * stepHeight, 0.1]);
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+
+        // Create and position the right rail
+        pushMatrix();
+        multTranslation([0.5, 0.0, 0.0]);
+        multScale([0.1, ladderSteps * stepHeight, 0.1]);
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+
+    // Create and position each step
+        for (let i = 0; i < ladderSteps; i++) {
+            pushMatrix();
+            multTranslation([0.0, i * stepHeight - (ladderSteps * stepHeight) / 2 + stepHeight / 2, 0.0]);
+            multScale([stepWidth, stepHeight, stepDepth]);
+            CUBE.draw(gl, program, mode);
+            popMatrix();
+        }
     }
 
     function upperStair() {
@@ -255,6 +282,12 @@ function setup(shaders) {
         pushMatrix();
             floor();
         popMatrix();
+        pushMatrix();
+            lowerStair();
+        popMatrix();
+
+
+
         /** 
          *pushMatrix(); // FireTruck
          *  pushMatrix(); // Stationary Body
