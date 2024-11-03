@@ -4,6 +4,7 @@ import { modelView, loadMatrix, multRotationY, multScale, multTranslation, pushM
 
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
+import * as TORUS from '../../libs/objects/torus.js';
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -23,10 +24,10 @@ const VP_DISTANCE = 12;
 function moveTruck(direction) {
     switch (direction) {
         case 'a':
-            truckPos += 0.1;
+            truckPos -= 0.1;
             break;
         case 'd':
-            truckPos -= 0.1;
+            truckPos += 0.1;
             break;
     }
 }
@@ -34,10 +35,10 @@ function moveTruck(direction) {
 function rotateStairBase(direction) {
     switch (direction) {
         case 'q':
-            stairBaseAngle += 1;
+            stairBaseAngle += 1.0;
             break;
         case 'e':
-            stairBaseAngle -= 1;
+            stairBaseAngle -= 1.0;
             break;
     }
 }
@@ -118,9 +119,10 @@ function setup(shaders) {
         }
     }
 
-    gl.clearColor(0.1, 0.1, 0.1, 1.0);
+    gl.clearColor(0.4, 0.1, 0.1, 1.0);
     CYLINDER.init(gl);
     CUBE.init(gl);
+    TORUS.init(gl);
     gl.enable(gl.DEPTH_TEST);   // Enables Z-buffer depth test
 
     window.requestAnimationFrame(render);
@@ -170,13 +172,19 @@ function setup(shaders) {
         }
     }
 
-    function wheel() {
+    function wheels() {
         //Torus plus cylinders for the  rim
-        //Spin on the x axis and sync with the translation (car movement)
-    }
-
-    function wheelConnector() {
         //Cylinder connecting two wheels
+        //Spin on the x axis and sync with the translation (car movement)
+        pushMatrix();
+
+        let color = vec4(0.1, 0.1, 0.1, 1.0);
+        gl.uniform4fv(u_color, color);
+
+        uploadModelView();
+        TORUS.draw(gl, program, mode);
+
+        popMatrix();
     }
 
     function chassis() {
@@ -205,6 +213,7 @@ function setup(shaders) {
         let color = vec4(0.3, 0.3, 0.3, 1);
         gl.uniform4fv(u_color, color);
         multScale([1,0.8,0.9]);
+        multRotationY(stairBaseAngle);
         uploadModelView();
         CUBE.draw(gl, program, mode);
 
@@ -259,6 +268,7 @@ function setup(shaders) {
     //Stair that stays in place
         pushMatrix();
         multTranslation([2.2,-0.7,0]);
+        multRotationY(stairBaseAngle);
         stairBaseElevation();
         popMatrix();
 
@@ -321,9 +331,33 @@ function setup(shaders) {
             floor();
         popMatrix();
         pushMatrix();
-
+            multTranslation([1.0 + truckPos, 1.0, 1.0]);
             pushMatrix();
-                multTranslation([0,4,0]);
+                multTranslation([-4.0, 0.65, 2.0]);
+                multRotationY(90);
+                multRotationZ(90);
+                wheels();
+            popMatrix();
+            pushMatrix();
+                multTranslation([-4.0, 0.65, -2.0]);
+                multRotationY(90);
+                multRotationZ(90);
+                wheels();
+            popMatrix();
+            pushMatrix();
+                multTranslation([4.0, 0.65, 2.0]);
+                multRotationY(90);
+                multRotationZ(90);
+                wheels();
+            popMatrix();
+            pushMatrix();
+                multTranslation([4.0, 0.65, -2.0]);
+                multRotationY(90);
+                multRotationZ(90);
+                wheels();
+            popMatrix();
+            pushMatrix();
+                multTranslation([0,6,0]);
                 lowerStair();                       
                 upperStair();
             popMatrix();
