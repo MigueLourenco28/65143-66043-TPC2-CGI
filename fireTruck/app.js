@@ -204,18 +204,21 @@ function setup(shaders) {
         //lower and upper stairs elevate
         let color = vec4(0.3, 0.3, 0.3, 1);
         gl.uniform4fv(u_color, color);
+        multScale([1,0.8,0.9]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
 
     }
 
     function stair() {
-    //Stair that stays in place
-        const ladderSteps = 8 + 1; // Number of steps on the lower stair (change first number & ignore +1)
+        const ladderSteps = 9 + 1; // Number of steps on the lower stair (change first number & ignore +1)
         const stepHeight = 0.1; // Height of each step
         const stepWidth = 1; // Width of each step
         const stepDepth = 0.1; // Depth of each step
         const stepSpacing = 0.4; // Increased spacing between steps
+        pushMatrix();
+        multRotationY(90);
+        multRotationX(-70);
 
         // Create and position the left rail
         pushMatrix();
@@ -236,7 +239,7 @@ function setup(shaders) {
         popMatrix();
 
     // Create and position each step
-        for (let i = 1; i < ladderSteps; i++) {
+        for (let i = 2; i < ladderSteps; i++) {
             pushMatrix();
             multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);
             multScale([stepWidth, stepHeight, stepDepth]);
@@ -244,10 +247,34 @@ function setup(shaders) {
             CUBE.draw(gl, program, mode);
             popMatrix();
         }
+        popMatrix();
+
+
+        
+
+    }
+
+
+    function lowerStair() {
+    //Stair that stays in place
+        pushMatrix();
+        multTranslation([2.2,-0.7,0]);
+        stairBaseElevation();
+        popMatrix();
+
+        stair();
+
     }
 
     function upperStair() {
         //Stair that extends
+
+        
+
+        pushMatrix();
+            multTranslation([-0.1,0.1,0]);
+            stair();
+        popMatrix();
     }
 
     //-------FireTruck-------//
@@ -295,14 +322,10 @@ function setup(shaders) {
         popMatrix();
         pushMatrix();
 
-        stairBaseElevation(); //TODO how to translate to stair base?
-
             pushMatrix();
-                multRotationX(70);
-                multTranslation([0,0,-4]);
-                stair();                         //lower stair
-                multTranslation([0, 0.1, -0.1]);
-                stair();                         //upper stair
+                multTranslation([0,4,0]);
+                lowerStair();                       
+                upperStair();
             popMatrix();
         popMatrix();
 
