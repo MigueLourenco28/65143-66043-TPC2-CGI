@@ -189,6 +189,30 @@ function setup(shaders) {
 
     function chassis() {
         //Stretch cube on top of the wheel connectors
+        pushMatrix();
+            multTranslation([-4.0, 0.65, 2.0]);
+            multRotationY(90);
+            multRotationZ(90);
+            wheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([-4.0, 0.65, -2.0]);
+            multRotationY(90);
+            multRotationZ(90);
+            wheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([4.0, 0.65, 2.0]);
+            multRotationY(90);
+            multRotationZ(90);
+            wheels();
+        popMatrix();
+        pushMatrix();
+            multTranslation([4.0, 0.65, -2.0]);
+            multRotationY(90);
+            multRotationZ(90);
+            wheels();
+        popMatrix();
     }
 
     function bumper() {
@@ -213,7 +237,6 @@ function setup(shaders) {
         let color = vec4(0.3, 0.3, 0.3, 1);
         gl.uniform4fv(u_color, color);
         multScale([1,0.8,0.9]);
-        multRotationY(stairBaseAngle);
         uploadModelView();
         CUBE.draw(gl, program, mode);
 
@@ -332,30 +355,9 @@ function setup(shaders) {
         popMatrix();
         pushMatrix();
             multTranslation([1.0 + truckPos, 0.0, 1.0]);
-            pushMatrix();
-                multTranslation([-4.0, 0.65, 2.0]);
-                multRotationY(90);
-                multRotationZ(90);
-                wheels();
-            popMatrix();
-            pushMatrix();
-                multTranslation([-4.0, 0.65, -2.0]);
-                multRotationY(90);
-                multRotationZ(90);
-                wheels();
-            popMatrix();
-            pushMatrix();
-                multTranslation([4.0, 0.65, 2.0]);
-                multRotationY(90);
-                multRotationZ(90);
-                wheels();
-            popMatrix();
-            pushMatrix();
-                multTranslation([4.0, 0.65, -2.0]);
-                multRotationY(90);
-                multRotationZ(90);
-                wheels();
-            popMatrix();
+            // Wheels and wheel connectors
+            chassis();
+            // Stairs
             pushMatrix();
                 multTranslation([0,6,0]);
                 lowerStair();                       
