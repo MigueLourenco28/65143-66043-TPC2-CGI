@@ -288,7 +288,11 @@ function setup(shaders) {
 
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
-
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        gl.uniform4fv(u_color, color);
+        multScale([1.0,0.4,1.0]);
+        uploadModelView();
+        CYLINDER.draw(gl, program, mode);
     }
 
     function stairBaseElevation() {
@@ -351,7 +355,6 @@ function setup(shaders) {
     //Stair that stays in place
         pushMatrix();
         multTranslation([2.2,-0.7,0]);
-        multRotationY(stairBaseAngle);
         stairBaseElevation();
         popMatrix();
 
@@ -418,6 +421,11 @@ function setup(shaders) {
             // Wheels and wheel connectors
             chassis();
             // Stairs
+            pushMatrix();
+                multTranslation([2.2,4.75,0.0]);
+                multRotationY(stairBaseAngle);
+                stairBaseRotation();
+            popMatrix();
             pushMatrix();
                 multTranslation([0,6,0]);
                 lowerStair();                       
