@@ -210,26 +210,29 @@ function setup(shaders) {
         const stepHeight = 0.2; // Height of each step
         const stepWidth = 1.0; // Width of each step
         const stepDepth = 0.1; // Depth of each step
+        const stepSpacing = 0.4; // Increased spacing between steps
 
         // Create and position the left rail
         pushMatrix();
         multTranslation([-0.5, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * stepHeight, 0.1]);
+        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+        uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
 
         // Create and position the right rail
         pushMatrix();
         multTranslation([0.5, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * stepHeight, 0.1]);
+        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+        uploadModelView();
         CUBE.draw(gl, program, mode);
         popMatrix();
 
     // Create and position each step
         for (let i = 0; i < ladderSteps; i++) {
             pushMatrix();
-            multTranslation([0.0, i * stepHeight - (ladderSteps * stepHeight) / 2 + stepHeight / 2, 0.0]);
-            multScale([stepWidth, stepHeight, stepDepth]);
+            multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);            multScale([stepWidth, stepHeight, stepDepth]);
+            uploadModelView();
             CUBE.draw(gl, program, mode);
             popMatrix();
         }
