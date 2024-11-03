@@ -13,6 +13,10 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
+let spinning = false;      // Toggle for spinning
+let spinAngle = 0;         // Starting angle for the spin
+let spinSpeed = 20;        // Speed in degrees per second (constant)
+let lastTime = 0;          // Store the timestamp of the last frame
 let truckPos = 0;   // Position of truck in the x axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
@@ -105,6 +109,8 @@ function setup(shaders) {
             case 'p':
                 moveLadder(input);
                 break;
+            case '5':
+                spinning = !spinning;
             case '4':
                 view = input;
                 break;
@@ -216,6 +222,7 @@ function setup(shaders) {
         }   
     }
 
+    // Cilinders that connect each pair of wheels (front and back)
     function wheelConnector() {
         pushMatrix();
 
@@ -232,28 +239,28 @@ function setup(shaders) {
         //Stretch cube on top of the wheel connectors
         //Wheels
         pushMatrix();
-            multTranslation([-4.0, 0.65, 2.0]);
+            multTranslation([-3.0, 0.65, 2.0]);
             multRotationY(90);
             multRotationZ(90);
             multRotationY(wheelAngle);
             wheel();
         popMatrix();
         pushMatrix();
-            multTranslation([-4.0, 0.65, -2.0]);
+            multTranslation([-3.0, 0.65, -2.0]);
             multRotationY(90);
             multRotationZ(90);
             multRotationY(wheelAngle);
             wheel();
         popMatrix();
         pushMatrix();
-            multTranslation([4.0, 0.65, 2.0]);
+            multTranslation([3.0, 0.65, 2.0]);
             multRotationY(90);
             multRotationZ(90);
             multRotationY(wheelAngle);
             wheel();
         popMatrix();
         pushMatrix();
-            multTranslation([4.0, 0.65, -2.0]);
+            multTranslation([3.0, 0.65, -2.0]);
             multRotationY(90);
             multRotationZ(90);
             multRotationY(wheelAngle);
@@ -261,21 +268,99 @@ function setup(shaders) {
         popMatrix();
         //Wheel connectors
         pushMatrix();
-            multTranslation([4.0, 0.65, 0.0]);
+            multTranslation([3.0, 0.65, 0.0]);
             multRotationX(90);
             multScale([0.2, 4.0, 0.2]);
             wheelConnector();
         popMatrix();
         pushMatrix();
-            multTranslation([-4.0, 0.65, 0.0]);
+            multTranslation([-3.0, 0.65, 0.0]);
             multRotationX(90);
             multScale([0.2, 4.0, 0.2]);
             wheelConnector();
         popMatrix();
+        //Chassis cover
+        pushMatrix();
+            let color = vec4(1.0, 0.0, 0.0, 1);
+            gl.uniform4fv(u_color, color);
+            multTranslation([0.0, 1.0, 0.0]);
+            multScale([10.0, 0.5, 3.5]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
     }
 
-    function bumper() {
+    function truckBase() {
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        gl.uniform4fv(u_color, color);
+        multTranslation([0.0, 1.5, 0.0]);
+        multScale([10.0, 0.5, 4.5]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+    }
+
+    function bumpers() {
         //Stretch cube to be on the side of the chassis
+        //Front bumper
+        pushMatrix();
+            let color = vec4(1.0, 1.0, 1.0, 1);
+            gl.uniform4fv(u_color, color);
+            multTranslation([-5.11, 1.0, 0.0]);
+            multScale([0.25, 0.5, 4.5]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([-4.5, 1.0, 2.0]);
+            multScale([1.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([-4.5, 1.0, -2.0]);
+            multScale([1.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        //Side bumpers
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([0.0, 1.0, 2.0]);
+            multScale([4.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([0.0, 1.0, -2.0]);
+            multScale([4.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        //Back bumper
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([5.11, 1.0, 0.0]);
+            multScale([0.25, 0.5, 4.5]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([4.5, 1.0, 2.0]);
+            multScale([1.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, color);
+            multTranslation([4.5, 1.0, -2.0]);
+            multScale([1.5, 0.5, 0.4]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
     }
 
     function cabin() {
@@ -290,7 +375,7 @@ function setup(shaders) {
         //Shorten cylinder on top of the waterTank (rotates)
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
-        multScale([1.0,0.4,1.0]);
+        multScale([1.5, 0.3, 1.4]);
         uploadModelView();
         CYLINDER.draw(gl, program, mode);
     }
@@ -375,6 +460,32 @@ function setup(shaders) {
 
     //-------FireTruck-------//
 
+    //-------Bonus: 360 view-------//
+    function startSpin(timestamp) {
+        if (spinning) {
+            // Calculate the time difference since the last frame
+            let deltaTime = (timestamp - lastTime) / 1000; // Convert milliseconds to seconds
+            lastTime = timestamp; // Update the last time
+            
+            // Increment the angle based on a constant speed
+            spinAngle += spinSpeed * deltaTime;
+            if (spinAngle >= 360) spinAngle -= 360; // Keep angle within [0, 360)
+    
+            // Calculate the camera's position on a circular path, with a higher y-coordinate for a top-down view
+            let radius = 10;  // Distance from the object
+            let camX = radius * Math.cos(spinAngle * Math.PI / 180);
+            let camZ = radius * Math.sin(spinAngle * Math.PI / 180);
+            let camY = 5;     // Higher y-coordinate to view the object slightly from above
+    
+            // Update the view matrix to position the camera at (camX, camY, camZ)
+            loadMatrix(lookAt([camX, camY, camZ], [0, 0, 0], [0, 1, 0]));
+    
+            // Request the next frame for smooth animation
+            window.requestAnimationFrame(startSpin);
+        }
+    }
+    //-------Bonus: 360 view-------//
+
     function render() {
         if (animation && time < 0.11) {
             time += 0.01;
@@ -395,20 +506,24 @@ function setup(shaders) {
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_projection"), false, flatten(mProjection));
 
         switch (view) {
+            case '5':
+                lastTime = performance.now(); // Reset the time when starting the spin
+                window.requestAnimationFrame(startSpin); // Start spinning if it's turned on
+                break;
             case '4':
-                loadMatrix(lookAt([8, 5, 15], [0, 0, 0], [0, 1, 0])); // axonometric projection
+                loadMatrix(lookAt([8, 5, 15], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
                 break;
             case '3':
-                loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top view
+                loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
                 break;
             case '2':
-                loadMatrix(lookAt([10, 0, 0], [0, 0, 0], [0, 1, 0])); // Left view
+                loadMatrix(lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0])); // Front View
                 break;
             case '1':
-                loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0])); // Front view
+                loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0])); // Left View
                 break;
             case '0':
-                loadMatrix(lookAt([0, 0, 0], [0, 0, 0], [0, 0, 1])); // Togle 1/4 views
+                loadMatrix(lookAt([0, 0, 0], [0, 0, 0], [0, 0, 1])); // 1/4 View
                 break;
         } 
 
@@ -420,6 +535,14 @@ function setup(shaders) {
             multTranslation([1.0 + truckPos, 0.0, 1.0]);
             // Wheels and wheel connectors
             chassis();
+            // Truck Base
+            pushMatrix();
+                multTranslation([0.0, 0.0, 0.0]);
+                truckBase();
+            popMatrix();
+            pushMatrix();
+                bumpers();
+            popMatrix();
             // Stairs
             pushMatrix();
                 multTranslation([2.2,4.75,0.0]);
