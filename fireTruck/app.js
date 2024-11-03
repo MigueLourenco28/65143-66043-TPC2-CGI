@@ -331,7 +331,7 @@ function setup(shaders) {
             floor();
         popMatrix();
         pushMatrix();
-            multTranslation([1.0 + truckPos, 1.0, 1.0]);
+            multTranslation([1.0 + truckPos, 0.0, 1.0]);
             pushMatrix();
                 multTranslation([-4.0, 0.65, 2.0]);
                 multRotationY(90);
