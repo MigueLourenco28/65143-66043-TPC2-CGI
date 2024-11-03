@@ -156,7 +156,7 @@ function setup(shaders) {
     //-------FireTruck-------//
 
     function floor() {
-        //Stretch cube on the floor?
+        //Stretch cube on the floor
         //Base of the Truck
         const tileSize = 0.5; // Size of each tile
         const gridSize = 25; // Total size of the floor grid
@@ -186,7 +186,7 @@ function setup(shaders) {
         //Cylinder connecting two wheels
         //Spin on the x axis and sync with the translation (car movement)
         
-        //Tire
+        //----------Tire----------//
         pushMatrix();
 
             let color = vec4(0.1, 0.1, 0.1, 1.0);
@@ -196,8 +196,8 @@ function setup(shaders) {
             TORUS.draw(gl, program, mode);
 
         popMatrix();
-
-        //Rim
+        //----------Tire----------//
+        //----------Rim----------//
         const numberOfSpokes = 20; // Increased density for spokes
         const spokeRadius = 0.03;
         const rimRadius = 0.5; // Slightly smaller than the tire radius
@@ -220,6 +220,7 @@ function setup(shaders) {
                 CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
             popMatrix();
         }   
+        //----------Rim----------//
     }
 
     // Cilinders that connect each pair of wheels (front and back)
@@ -235,9 +236,10 @@ function setup(shaders) {
         popMatrix();
     }
 
+    //Contains the wheels, the wheels connectors and the a cover on top of them
     function chassis() {
         //Stretch cube on top of the wheel connectors
-        //Wheels
+        //----------Wheels----------//
         pushMatrix();
             multTranslation([-3.0, 0.65, 2.0]);
             multRotationY(90);
@@ -266,7 +268,8 @@ function setup(shaders) {
             multRotationY(wheelAngle);
             wheel();
         popMatrix();
-        //Wheel connectors
+        //----------Wheels----------//
+        //----------Wheel Connectors----------//
         pushMatrix();
             multTranslation([3.0, 0.65, 0.0]);
             multRotationX(90);
@@ -279,7 +282,8 @@ function setup(shaders) {
             multScale([0.2, 4.0, 0.2]);
             wheelConnector();
         popMatrix();
-        //Chassis cover
+        //----------Wheel Connectors----------//
+        //----------Chassis Cover----------//
         pushMatrix();
             let color = vec4(1.0, 0.0, 0.0, 1);
             gl.uniform4fv(u_color, color);
@@ -288,8 +292,10 @@ function setup(shaders) {
             uploadModelView();
             CUBE.draw(gl, program, mode);
         popMatrix();
+        //----------Chassis Cover----------//
     }
 
+    //Base for the upper part of the truck
     function truckBase() {
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
