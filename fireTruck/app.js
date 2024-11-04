@@ -14,11 +14,11 @@ let speed = 1 / 60.0;   // Speed (how many days added to time on each render pas
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
 let theta = 10; // Camera angle of the axonometric projection
-let truckPos = 0;   // Position of truck in the x axis
+let truckPos = 0.0;   // Position of truck in the x axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
-let ladderInclination = -80; // Angle of the ladder in the z axis
-let upperLadderPos = 0; // Position of the upper stairs 
+let ladderInclination = 0; // Angle of the ladder in the z axis
+let upperLadderPos = 0.0; // Position of the upper stairs 
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 let view = 4; // View
 
@@ -59,15 +59,23 @@ function setup(shaders) {
                 break;
             case 'w':
                 // TODO: Implement ladder movement
+                if(ladderInclination < 90)
+                    ladderInclination += 1;
                 break;
             case 's':
                 // TODO: Implement ladder movement
+                if(ladderInclination > 0)
+                    ladderInclination -= 1;
                 break;
             case 'o':
                 // TODO: Implement ladder movement
+                if(upperLadderPos < 5.0)
+                    upperLadderPos += 0.1;
                 break;
             case 'p':
                 // TODO: Implement ladder movement
+                if(upperLadderPos > 0.0)
+                    upperLadderPos -= 0.1;
                 break;
             case ' ':
                 if(mode == gl.LINES)
@@ -201,7 +209,7 @@ function setup(shaders) {
         //----------Rim----------//
     }
 
-    // Cilinders that connect each pair of wheels (front and back)
+    // Cylinders that connect each pair of wheels (front and back)
     function wheelConnector() {
         pushMatrix();
             let color = vec4(0.5, 0.5, 0.5, 1.0);
@@ -484,6 +492,7 @@ function setup(shaders) {
         popMatrix();
     }
 
+    //Cylinder that controls the rotation of the stairs and the base elevation
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
         pushMatrix();
@@ -499,6 +508,7 @@ function setup(shaders) {
         popMatrix();
     }
 
+    //Cube that is the stand for the stairs that controls the elevation of the stairs
     function stairBaseElevation() {
         //Cube stays in place
         //lower and upper stairs elevate
@@ -574,11 +584,6 @@ function setup(shaders) {
 
     function lowerStair() {
     //Stair that stays in place
-    
-    pushMatrix();
-            multTranslation([2.2,-0.4,0]);
-            stairBaseElevation();
-    popMatrix();
     multTranslation([-1.3,-0.5,0]);
     stair(-90);
 
@@ -587,7 +592,7 @@ function setup(shaders) {
     function upperStair() {
         //Stair that extends
         pushMatrix();
-            multTranslation([-0.08,0.16+0,0]);
+            multTranslation([-0.08,0.16,0]);
             stair(-90);
         popMatrix();
     }
@@ -615,7 +620,7 @@ function setup(shaders) {
 
         switch (view) {
             case '4':
-                loadMatrix(lookAt([theta + 1, theta , theta - 1], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+                loadMatrix(lookAt([5, 5, theta + 1], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
                 break;
             case '3':
                 loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
@@ -664,9 +669,16 @@ function setup(shaders) {
                 multRotationY(stairBaseAngle);
                 stairBaseRotation();
                 pushMatrix();
-                    multTranslation([-2.2,1.2,0]);
-                    lowerStair();                       
-                    upperStair();
+                    multTranslation([0.0,0.8,0.0]);
+                    stairBaseElevation();
+                    multRotationZ(-ladderInclination);
+                    pushMatrix();
+                        multTranslation([-2.0,0.5,0.0]);
+                        multScale([1.0, 1.0, 0.75]);
+                        lowerStair();  
+                        multTranslation([-upperLadderPos, 0.0, 0.0]);                     
+                        upperStair();
+                    popMatrix();
                 popMatrix(); 
             popMatrix();
         popMatrix();
