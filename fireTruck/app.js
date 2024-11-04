@@ -5,6 +5,7 @@ import { modelView, loadMatrix, multRotationY, multScale, multTranslation, pushM
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
+import * as PYRAMID from '../../libs/objects/pyramid.js';
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -998,6 +999,73 @@ function setup(shaders) {
     }
     
 
+    function firehose() {
+
+        pushMatrix();
+
+        let color = vec4(0, 1, 0, 1.0);
+        gl.uniform4fv(u_color, color);
+        
+            // Outer Torus
+            pushMatrix();
+                multTranslation([0, 0, 0]);
+                multRotationX(90);
+                multRotationZ(90);
+                multScale([1.5, 0.8, 1.5]);
+
+                uploadModelView();
+                TORUS.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    TORUS.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+                
+            popMatrix();
+
+            // Inner Torus
+            pushMatrix();
+                multTranslation([0.1, 0, 0]);
+                multRotationX(90);
+                multRotationZ(90);
+                multScale([0.75, 0.8 , 0.75]);
+
+                uploadModelView();
+                TORUS.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    TORUS.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+                
+            popMatrix();
+
+            // Inner inner Torus
+            pushMatrix();
+
+                multTranslation([0.2, 0, 0]);
+                multRotationX(90);
+                multRotationZ(90);
+                multScale([0.3575, 0.8 , 0.3575]);
+
+                uploadModelView();
+                TORUS.draw(gl, program, mode);
+
+                    pushMatrix();
+                        gl.uniform4fv(u_color, outlineColor);
+                        TORUS.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                        gl.uniform4fv(u_color, color);
+                    popMatrix();
+
+            popMatrix();
+
+
+        popMatrix();
+    }
+
+
     function decal() {
         pushMatrix();
         
@@ -1040,6 +1108,12 @@ function setup(shaders) {
             popMatrix();
 
         popMatrix();
+
+        pushMatrix();
+            multTranslation([4.9,3,0]);
+            firehose();
+        popMatrix();
+
     }
     //-------FireTruck-------//
 
