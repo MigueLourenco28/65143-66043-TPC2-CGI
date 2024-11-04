@@ -13,12 +13,13 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
-let cameraAngle = 10; // Camera angle of the axonometric projection
+let theta = 10; // Camera angle of the axonometric projection
 let truckPos = 0;   // Position of truck in the x axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = -80; // Angle of the ladder in the z axis
 let upperLadderPos = 0; // Position of the upper stairs 
+let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 let view = 4; // View
 
 const VP_DISTANCE = 12;
@@ -68,6 +69,12 @@ function setup(shaders) {
             case 'p':
                 // TODO: Implement ladder movement
                 break;
+            case ' ':
+                if(mode == gl.LINES)
+                    mode = gl.TRIANGLES;
+                else
+                    mode = gl.LINES;
+                break;
             case '4':
                 view = input;
                 break;
@@ -84,10 +91,10 @@ function setup(shaders) {
                 view = input;
                 break;
             case 'ArrowLeft':
-                cameraAngle += 1;
+                theta += 1;
                 break;
             case 'ArrowRight':
-                cameraAngle -= 1;
+                theta -= 1;
                 break;
         }
     }
@@ -139,7 +146,7 @@ function setup(shaders) {
                 multScale([tileSize, 0.05, tileSize]);
 
                 uploadModelView();
-                CUBE.draw(gl, program, mode);
+                CUBE.draw(gl, program, gl.TRIANGLES);
 
                 popMatrix();
             }
@@ -171,7 +178,7 @@ function setup(shaders) {
 
         multRotationX(90);
         for (let i = 0; i < numberOfSpokes; i++) {
-            pushMatrix();            
+            pushMatrix();        
                 // Set color for the rim and spokes
                 gl.uniform4fv(u_color, rimColor); // Gray color for the rim
 
@@ -186,7 +193,7 @@ function setup(shaders) {
                 uploadModelView();
                 CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
                 pushMatrix();
-                    gl.uniform4fv(u_color, color);
+                    gl.uniform4fv(u_color, outlineColor);
                     CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
             popMatrix();
@@ -197,18 +204,15 @@ function setup(shaders) {
     // Cilinders that connect each pair of wheels (front and back)
     function wheelConnector() {
         pushMatrix();
+            let color = vec4(0.5, 0.5, 0.5, 1.0);
+            gl.uniform4fv(u_color, color);
 
-        let color = vec4(0.5, 0.5, 0.5, 1.0);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1.0);
-        gl.uniform4fv(u_color, color);
-
-        uploadModelView();
-        CYLINDER.draw(gl, program, mode);
-        pushMatrix();
-            gl.uniform4fv(u_color, outlineColor);
-            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-        popMatrix();
-
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
     }
 
@@ -262,7 +266,6 @@ function setup(shaders) {
         //----------Chassis Cover----------//
         pushMatrix();
             let color = vec4(1.0, 0.0, 0.0, 1);
-            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([0.0, 1.0, 0.0]);
             multScale([10.0, 0.5, 3.5]);
@@ -279,7 +282,6 @@ function setup(shaders) {
     //Base for the upper part of the truck
     function truckBase() {
         let color = vec4(1.0, 0.0, 0.0, 1);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multTranslation([0.0, 1.5, 0.0]);
         multScale([10.0, 0.5, 4.5]);
@@ -296,7 +298,6 @@ function setup(shaders) {
         //----------Front Bumper----------//
         pushMatrix();
             let color = vec4(1.0, 1.0, 1.0, 1);
-            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([-5.11, 1.0, 0.0]);
             multScale([0.25, 0.5, 4.5]);
@@ -391,25 +392,87 @@ function setup(shaders) {
         //----------Back Bumper----------//
     }
 
+    //Cabin where the fire fighters drive the truck
     function cabin() {
         //Stretch cube on top of the shassis
-        let color = vec4(1.0, 0.0, 0.0, 1);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
-        gl.uniform4fv(u_color, color);
-        multTranslation([-3.7, 3.0, 0.0]);
-        multScale([2.25, 3.00, 4.0]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
         pushMatrix();
-            gl.uniform4fv(u_color, outlineColor);
-            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            let color = vec4(1.0, 0.0, 0.0, 1);
+            gl.uniform4fv(u_color, color);
+            multTranslation([-3.7, 3.0, 0.0]);
+            multScale([2.25, 3.00, 4.0]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
+        //------Windows------//
+        pushMatrix();
+            let windowColor = vec4(0.6, 0.6, 0.9, 1.0);
+            gl.uniform4fv(u_color, windowColor);
+            multTranslation([-4.8, 3.5, 0.0]);
+            multScale([0.25, 1.5, 3.5]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, windowColor);
+            multTranslation([-3.9, 3.5, 2.0]);
+            multRotationY(90);
+            multScale([0.25, 1.5, 1.25]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, windowColor);
+            multTranslation([-3.9, 3.5, -2.0]);
+            multRotationY(90);
+            multScale([0.25, 1.5, 1.25]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+        popMatrix();
+        //------Windows------//
+        //------Blinkers------//
+        pushMatrix();
+            let blinkerColor = vec4(1.0, 1.0, 0.0, 1.0);
+            gl.uniform4fv(u_color, blinkerColor);
+            multTranslation([-4.75, 2.25, 1.5]);
+            multRotationZ(90);
+            multScale([0.5, 0.25, 0.5]);
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+        popMatrix();
+        pushMatrix();
+            gl.uniform4fv(u_color, blinkerColor);
+            multTranslation([-4.75, 2.25, -1.5]);
+            multRotationZ(90);
+            multScale([0.5, 0.25, 0.5]);
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+        popMatrix();
+        //------Blinkers------//
+        //------Head Lights------//
+        pushMatrix();
+            let blueLight = vec4(0.0, 0.0, 1.0, 1);
+            let redLight = vec4(1.0, 0.0, 0.0, 1.0);
+            let whiteSeperator = vec4(1.0, 1.0, 1.0, 1.0);
+                gl.uniform4fv(u_color, color);
+            multTranslation([-3.7, 3.0, 0.0]);
+            multScale([2.25, 3.00, 4.0]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
+        popMatrix();
+        //------Head Lights------//
     }
 
     function waterTank() {
         //Stretch cube on top of the shassis
         let color = vec4(1.0, 0.0, 0.0, 1);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multTranslation([1.25, 3.0, 0.0]);
         multScale([7.0, 2.5, 4.0]);
@@ -425,7 +488,6 @@ function setup(shaders) {
         //Shorten cylinder on top of the waterTank (rotates)
         pushMatrix();
             let color = vec4(1.0, 0.45, 0.0, 1);
-            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multScale([2.2, 0.7, 2.2]);
             uploadModelView();
@@ -441,7 +503,6 @@ function setup(shaders) {
         //Cube stays in place
         //lower and upper stairs elevate
         let color = vec4(0.3, 0.3, 0.3, 1);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multScale([1.3,0.9,1.3]);
         uploadModelView();
@@ -467,7 +528,6 @@ function setup(shaders) {
         // Create and position the left rail
         pushMatrix();
             let color = vec4(0.3, 0.3, 0.3, 1);
-            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([stepWidth/2*-1, 0.0, 0.0]);
             multScale([railWidth, ladderSteps * (stepHeight + stepSpacing), railDepth]);
@@ -555,7 +615,7 @@ function setup(shaders) {
 
         switch (view) {
             case '4':
-                loadMatrix(lookAt([cameraAngle, 5, cameraAngle], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+                loadMatrix(lookAt([theta + 1, theta , theta - 1], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
                 break;
             case '3':
                 loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
@@ -572,9 +632,12 @@ function setup(shaders) {
         } 
 
         // Scene graph traversal code goes here...
+        //---------Scenery---------//
         pushMatrix();
             floor();
         popMatrix();
+        //---------Scenery---------//
+        //---------Fire Truck---------//
         pushMatrix();
             multTranslation([1.0 + truckPos, 0.0, 1.0]);
             // Wheels and wheel connectors
@@ -607,6 +670,7 @@ function setup(shaders) {
                 popMatrix(); 
             popMatrix();
         popMatrix();
+        //---------Fire Truck---------//
     }
 }
 
