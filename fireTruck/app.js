@@ -69,7 +69,7 @@ function setup(shaders) {
                 break;
             case 'o':
                 // TODO: Implement ladder movement
-                if(upperLadderPos < 5.0)
+                if(upperLadderPos < 4.65)
                     upperLadderPos += 0.1;
                 break;
             case 'p':
@@ -604,12 +604,51 @@ function setup(shaders) {
 
     function upperStair() {
         //Stair that extends
-        
+
         pushMatrix();
             multTranslation([-0.08,0.16,0]);
             stair();
         popMatrix();
     }
+
+
+    // Decals
+
+    function decalC() {
+        pushMatrix();
+
+        multTranslation([0,0,0.7]);
+
+        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Blue color for `C`
+        gl.uniform4fv(u_color, color);
+    
+        // Top segment
+        pushMatrix();
+        multTranslation([-0.2, 0.4, 0]);
+        multScale([0.2, 0.2, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Left segment
+        pushMatrix();
+        multTranslation([-0.3, 0, 0]);
+        multScale([0.1, 0.8, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Bottom segment
+        pushMatrix();
+        multTranslation([-0.2, -0.4, 0]);
+        multScale([0.2, 0.2, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        popMatrix();
+    }
+    
 
     //-------FireTruck-------//
 
@@ -676,6 +715,7 @@ function setup(shaders) {
             // Water tank
             pushMatrix();
                 waterTank();
+                
             popMatrix();
             // Stairs      
             pushMatrix();         
