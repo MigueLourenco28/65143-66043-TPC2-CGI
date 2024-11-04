@@ -17,7 +17,7 @@ let cameraAngle = 10; // Camera angle of the axonometric projection
 let truckPos = 0;   // Position of truck in the x axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
-let ladderInclination = 0; // Angle of the ladder in the z axis
+let ladderInclination = -80; // Angle of the ladder in the z axis
 let upperLadderPos = 0; // Position of the upper stairs 
 let view = 4; // View
 
@@ -423,15 +423,17 @@ function setup(shaders) {
 
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
-        let color = vec4(1.0, 0.0, 0.0, 1);
-        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
-        gl.uniform4fv(u_color, color);
-        multScale([1.5, 0.3, 1.4]);
-        uploadModelView();
-        CYLINDER.draw(gl, program, mode);
         pushMatrix();
-            gl.uniform4fv(u_color, outlineColor);
-            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            let color = vec4(1.0, 0.0, 0.0, 1);
+            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
+            gl.uniform4fv(u_color, color);
+            multScale([2.2, 0.7, 2.2]);
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
     }
 
@@ -441,7 +443,7 @@ function setup(shaders) {
         let color = vec4(0.3, 0.3, 0.3, 1);
         let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
-        multScale([1,0.8,0.9]);
+        multScale([1.3,0.9,1.3]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
         pushMatrix();
@@ -450,15 +452,17 @@ function setup(shaders) {
         popMatrix();
     }
 
-    function stair() {
+    function stair(tmp) {
         const ladderSteps = 9 + 1; // Number of steps on the lower stair (change first number & ignore +1)
-        const stepHeight = 0.1; // Height of each step
-        const stepWidth = 1; // Width of each step
-        const stepDepth = 0.1; // Depth of each step
-        const stepSpacing = 0.4; // Increased spacing between steps
+        const railWidth = 0.16;
+        const railDepth = 0.16;
+        const stepHeight = 0.2; // Height of each step
+        const stepWidth = 1.5; // Width of each step
+        const stepDepth = railDepth; // Depth of each step
+        const stepSpacing = 0.6; // Increased spacing between steps
         pushMatrix();
         multRotationY(90);
-        multRotationX(-70);
+        multRotationX(tmp);
 
         // Create and position the left rail
         pushMatrix();
@@ -466,7 +470,7 @@ function setup(shaders) {
             let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([stepWidth/2*-1, 0.0, 0.0]);
-            multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+            multScale([railWidth, ladderSteps * (stepHeight + stepSpacing), railDepth]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
             pushMatrix();
@@ -478,7 +482,7 @@ function setup(shaders) {
         // Create and position the right rail
         pushMatrix();
             multTranslation([stepWidth/2, 0.0, 0.0]);
-            multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+            multScale([railWidth, ladderSteps * (stepHeight + stepSpacing), railDepth]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
             pushMatrix();
@@ -510,23 +514,21 @@ function setup(shaders) {
 
     function lowerStair() {
     //Stair that stays in place
-        pushMatrix();
-        multTranslation([2.2,-0.7,0]);
-        stairBaseElevation();
-        popMatrix();
-
-        stair();
+    
+    pushMatrix();
+            multTranslation([2.2,-0.4,0]);
+            stairBaseElevation();
+    popMatrix();
+    multTranslation([-1.3,-0.5,0]);
+    stair(-90);
 
     }
 
     function upperStair() {
         //Stair that extends
-
-        
-
         pushMatrix();
-            multTranslation([-0.1,0.1,0]);
-            stair();
+            multTranslation([-0.08,0.16+0,0]);
+            stair(-90);
         popMatrix();
     }
 
@@ -593,76 +595,18 @@ function setup(shaders) {
             pushMatrix();
                 waterTank();
             popMatrix();
-            // Stairs
-            pushMatrix();
-                multTranslation([2.2,4.4,0.0]);
+            // Stairs      
+            pushMatrix();         
+                multTranslation([3.2,4.4,0.0]);
                 multRotationY(stairBaseAngle);
                 stairBaseRotation();
-            popMatrix();
-            pushMatrix();
-                multTranslation([0,5.65,0]);
-                lowerStair();                       
-                upperStair();
+                pushMatrix();
+                    multTranslation([-2.2,1.2,0]);
+                    lowerStair();                       
+                    upperStair();
+                popMatrix(); 
             popMatrix();
         popMatrix();
-
-
-
-        /** 
-         *pushMatrix(); // FireTruck
-         *  pushMatrix(); // Stationary Body
-         * 
-         *      chassis();
-         *      bumper();
-         *      cabin();
-         *      waterTank();
-         * 
-         *      pushMatrix(); // Moving Parts
-         *  
-         *          pushMatrix(); //Wheels
-         *              wheel();    
-         *              wheel();
-         *              wheel();
-         *              wheel();
-         *              wheelConnector();
-         *              wheelConnector();
-         *          popMatrix(); //Wheels
-         *          pushMatrix(); //Chassis
-         *              chassis();
-         *          popMatrix(); //Chassis
-         *          pushMatrix() //Stairs
-         * 
-         *              pushMatrix(); // Rotation
-         *                  stairBaseRotation();
-         *                  
-         *                  pushMatrix(); // Elevation
-         *                      stairBaseElevation();
-         * 
-         *                      pushMatrix();
-         *                          lowerStair();
-         * 
-         *                          pushMatrix(); // Extension
-         *                              upperStair();
-         *                              extend();???
-         * 
-         *                          popMatrix(); // Extension
-         * 
-         *                      popMatrix();
-         * 
-         *                  popMatrix(); // Elevation
-         * 
-         *              popMatrix(); // Rotation
-         * 
-         *          popMatrix() // Stairs
-         * 
-         *      popMatrix(); // Moving Parts
-         * 
-         *  popMatrix(); // Stationary Body
-         * 
-         *popMatrix(); // FireTruck
-         */
-        //-------FireTruck-------// 
-
     }
 }
 
