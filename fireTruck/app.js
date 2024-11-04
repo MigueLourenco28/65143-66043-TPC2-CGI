@@ -13,10 +13,7 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
-let spinning = false;      // Toggle for spinning
-let spinAngle = 0;         // Starting angle for the spin
-let spinSpeed = 20;        // Speed in degrees per second (constant)
-let lastTime = 0;          // Store the timestamp of the last frame
+let cameraAngle = 10; // Camera angle of the axonometric projection
 let truckPos = 0;   // Position of truck in the x axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
@@ -26,46 +23,6 @@ let view = 4; // View
 
 const VP_DISTANCE = 12;
 
-function moveTruck(direction) {
-    switch (direction) {
-        case 'a':
-            truckPos -= 0.1;
-            wheelAngle += 1;
-            break;
-        case 'd':
-            truckPos += 0.1;
-            wheelAngle -= 1;
-            break;
-    }
-}
-
-function rotateStairBase(direction) {
-    switch (direction) {
-        case 'q':
-            stairBaseAngle += 1.0;
-            break;
-        case 'e':
-            stairBaseAngle -= 1.0;
-            break;
-    }
-}
-
-function moveLadder(direction) {
-    switch (direction) {
-        case 'w':
-            // TODO: Implement ladder movement
-            break;
-        case's':
-            // TODO: Implement ladder movement
-            break;
-        case 'o':
-            // TODO: Implement ladder movement
-            break;
-        case 'p':
-            // TODO: Implement ladder movement
-            break;
-    }
-}
 
 function setup(shaders) {
     let canvas = document.getElementById("gl-canvas");
@@ -86,31 +43,31 @@ function setup(shaders) {
         let input = event.key;
         switch (input) {
             case 'a':
-                moveTruck(input);
+                truckPos -= 0.1;
+                wheelAngle += 1;
                 break;
             case 'd':
-                moveTruck(input);
+                truckPos += 0.1;
+                wheelAngle -= 1;
                 break;
             case 'q':
-                rotateStairBase(input);
+                stairBaseAngle += 1;
                 break;
             case 'e':
-                rotateStairBase(input);
+                stairBaseAngle -= 1.0;
                 break;
             case 'w':
-                moveLadder(input);
+                // TODO: Implement ladder movement
                 break;
             case 's':
-                moveLadder(input);
+                // TODO: Implement ladder movement
                 break;
             case 'o':
-                moveLadder(input);
+                // TODO: Implement ladder movement
                 break;
             case 'p':
-                moveLadder(input);
+                // TODO: Implement ladder movement
                 break;
-            case '5':
-                spinning = !spinning;
             case '4':
                 view = input;
                 break;
@@ -125,6 +82,13 @@ function setup(shaders) {
                 break;
             case '0':
                 view = input;
+                break;
+            case 'ArrowLeft':
+                cameraAngle += 1;
+                break;
+            case 'ArrowRight':
+                cameraAngle -= 1;
+                break;
         }
     }
 
@@ -155,6 +119,7 @@ function setup(shaders) {
 
     //-------FireTruck-------//
 
+    //Base ground for the fire truck
     function floor() {
         //Stretch cube on the floor
         //Base of the Truck
@@ -181,6 +146,7 @@ function setup(shaders) {
         }
     }
 
+    // Make a wheel composed by a tire and rim for the fire truck
     function wheel() {
         //Torus plus cylinders for the  rim
         //Cylinder connecting two wheels
@@ -190,6 +156,7 @@ function setup(shaders) {
         pushMatrix();
 
             let color = vec4(0.1, 0.1, 0.1, 1.0);
+            let rimColor = vec4(0.5, 0.5, 0.5, 1.0);
             gl.uniform4fv(u_color, color);
 
             uploadModelView();
@@ -206,7 +173,7 @@ function setup(shaders) {
         for (let i = 0; i < numberOfSpokes; i++) {
             pushMatrix();            
                 // Set color for the rim and spokes
-                gl.uniform4fv(u_color, vec4(0.5, 0.5, 0.5, 1.0)); // Gray color for the rim
+                gl.uniform4fv(u_color, rimColor); // Gray color for the rim
 
                 // Rotate each spoke around the wheel center
                 const angle = (360 / numberOfSpokes) * i;
@@ -218,6 +185,10 @@ function setup(shaders) {
 
                 uploadModelView();
                 CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
+                pushMatrix();
+                    gl.uniform4fv(u_color, color);
+                    CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
             popMatrix();
         }   
         //----------Rim----------//
@@ -228,10 +199,15 @@ function setup(shaders) {
         pushMatrix();
 
         let color = vec4(0.5, 0.5, 0.5, 1.0);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1.0);
         gl.uniform4fv(u_color, color);
 
         uploadModelView();
         CYLINDER.draw(gl, program, mode);
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
 
         popMatrix();
     }
@@ -286,11 +262,16 @@ function setup(shaders) {
         //----------Chassis Cover----------//
         pushMatrix();
             let color = vec4(1.0, 0.0, 0.0, 1);
+            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([0.0, 1.0, 0.0]);
             multScale([10.0, 0.5, 3.5]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         //----------Chassis Cover----------//
     }
@@ -298,23 +279,33 @@ function setup(shaders) {
     //Base for the upper part of the truck
     function truckBase() {
         let color = vec4(1.0, 0.0, 0.0, 1);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multTranslation([0.0, 1.5, 0.0]);
         multScale([10.0, 0.5, 4.5]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     }
 
     function bumpers() {
         //Stretch cube to be on the side of the chassis
-        //Front bumper
+        //----------Front Bumper----------//
         pushMatrix();
             let color = vec4(1.0, 1.0, 1.0, 1);
+            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multTranslation([-5.11, 1.0, 0.0]);
             multScale([0.25, 0.5, 4.5]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         pushMatrix();
             gl.uniform4fv(u_color, color);
@@ -322,6 +313,10 @@ function setup(shaders) {
             multScale([1.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         pushMatrix();
             gl.uniform4fv(u_color, color);
@@ -329,14 +324,23 @@ function setup(shaders) {
             multScale([1.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
-        //Side bumpers
+        //----------Front Bumper----------//
+        //----------Side Bumpers----------//
         pushMatrix();
             gl.uniform4fv(u_color, color);
             multTranslation([0.0, 1.0, 2.0]);
             multScale([4.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         pushMatrix();
             gl.uniform4fv(u_color, color);
@@ -344,14 +348,23 @@ function setup(shaders) {
             multScale([4.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
-        //Back bumper
+        //----------Side Bumpers----------//
+        //----------Back Bumper----------//
         pushMatrix();
             gl.uniform4fv(u_color, color);
             multTranslation([5.11, 1.0, 0.0]);
             multScale([0.25, 0.5, 4.5]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         pushMatrix();
             gl.uniform4fv(u_color, color);
@@ -359,6 +372,10 @@ function setup(shaders) {
             multScale([1.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
         pushMatrix();
             gl.uniform4fv(u_color, color);
@@ -366,35 +383,71 @@ function setup(shaders) {
             multScale([1.5, 0.5, 0.4]);
             uploadModelView();
             CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
+        //----------Back Bumper----------//
     }
 
     function cabin() {
         //Stretch cube on top of the shassis
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
+        gl.uniform4fv(u_color, color);
+        multTranslation([-3.7, 3.0, 0.0]);
+        multScale([2.25, 3.00, 4.0]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     }
 
     function waterTank() {
         //Stretch cube on top of the shassis
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
+        gl.uniform4fv(u_color, color);
+        multTranslation([1.25, 3.0, 0.0]);
+        multScale([7.0, 2.5, 4.0]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     }
 
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
         let color = vec4(1.0, 0.0, 0.0, 1);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multScale([1.5, 0.3, 1.4]);
         uploadModelView();
         CYLINDER.draw(gl, program, mode);
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     }
 
     function stairBaseElevation() {
         //Cube stays in place
         //lower and upper stairs elevate
         let color = vec4(0.3, 0.3, 0.3, 1);
+        let outlineColor = vec4(0.1, 0.1, 0.1, 1);
         gl.uniform4fv(u_color, color);
         multScale([1,0.8,0.9]);
         uploadModelView();
         CUBE.draw(gl, program, mode);
-
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     }
 
     function stair() {
@@ -409,29 +462,42 @@ function setup(shaders) {
 
         // Create and position the left rail
         pushMatrix();
-        let color = vec4(0.3, 0.3, 0.3, 1);
-        gl.uniform4fv(u_color, color);
-        multTranslation([stepWidth/2*-1, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
+            let color = vec4(0.3, 0.3, 0.3, 1);
+            let outlineColor = vec4(0.1, 0.1, 0.1, 1);
+            gl.uniform4fv(u_color, color);
+            multTranslation([stepWidth/2*-1, 0.0, 0.0]);
+            multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
 
         // Create and position the right rail
         pushMatrix();
-        multTranslation([stepWidth/2, 0.0, 0.0]);
-        multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
+            multTranslation([stepWidth/2, 0.0, 0.0]);
+            multScale([0.1, ladderSteps * (stepHeight + stepSpacing), 0.1]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
         popMatrix();
 
         // Create and position each step
         for (let i = 2; i < ladderSteps; i++) {
             pushMatrix();
-            multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);
-            multScale([stepWidth, stepHeight, stepDepth]);
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
+                multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);
+                multScale([stepWidth, stepHeight, stepDepth]);
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
             popMatrix();
         }
         popMatrix();
@@ -466,32 +532,6 @@ function setup(shaders) {
 
     //-------FireTruck-------//
 
-    //-------Bonus: 360 view-------//
-    function startSpin(timestamp) {
-        if (spinning) {
-            // Calculate the time difference since the last frame
-            let deltaTime = (timestamp - lastTime) / 1000; // Convert milliseconds to seconds
-            lastTime = timestamp; // Update the last time
-            
-            // Increment the angle based on a constant speed
-            spinAngle += spinSpeed * deltaTime;
-            if (spinAngle >= 360) spinAngle -= 360; // Keep angle within [0, 360)
-    
-            // Calculate the camera's position on a circular path, with a higher y-coordinate for a top-down view
-            let radius = 10;  // Distance from the object
-            let camX = radius * Math.cos(spinAngle * Math.PI / 180);
-            let camZ = radius * Math.sin(spinAngle * Math.PI / 180);
-            let camY = 5;     // Higher y-coordinate to view the object slightly from above
-    
-            // Update the view matrix to position the camera at (camX, camY, camZ)
-            loadMatrix(lookAt([camX, camY, camZ], [0, 0, 0], [0, 1, 0]));
-    
-            // Request the next frame for smooth animation
-            window.requestAnimationFrame(startSpin);
-        }
-    }
-    //-------Bonus: 360 view-------//
-
     function render() {
         if (animation && time < 0.11) {
             time += 0.01;
@@ -512,12 +552,8 @@ function setup(shaders) {
         gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_projection"), false, flatten(mProjection));
 
         switch (view) {
-            case '5':
-                lastTime = performance.now(); // Reset the time when starting the spin
-                window.requestAnimationFrame(startSpin); // Start spinning if it's turned on
-                break;
             case '4':
-                loadMatrix(lookAt([8, 5, 15], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+                loadMatrix(lookAt([cameraAngle, 5, cameraAngle], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
                 break;
             case '3':
                 loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
@@ -549,14 +585,22 @@ function setup(shaders) {
             pushMatrix();
                 bumpers();
             popMatrix();
+            // Cabin
+            pushMatrix();
+                cabin();
+            popMatrix();
+            // Water tank
+            pushMatrix();
+                waterTank();
+            popMatrix();
             // Stairs
             pushMatrix();
-                multTranslation([2.2,4.75,0.0]);
+                multTranslation([2.2,4.4,0.0]);
                 multRotationY(stairBaseAngle);
                 stairBaseRotation();
             popMatrix();
             pushMatrix();
-                multTranslation([0,6,0]);
+                multTranslation([0,5.65,0]);
                 lowerStair();                       
                 upperStair();
             popMatrix();
