@@ -424,7 +424,7 @@ function setup(shaders) {
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
         pushMatrix();
-            let color = vec4(1.0, 0.0, 0.0, 1);
+            let color = vec4(1.0, 0.45, 0.0, 1);
             let outlineColor = vec4(0.1, 0.1, 0.1, 1);
             gl.uniform4fv(u_color, color);
             multScale([2.2, 0.7, 2.2]);
