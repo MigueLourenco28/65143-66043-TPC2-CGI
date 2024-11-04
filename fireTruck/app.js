@@ -479,6 +479,7 @@ function setup(shaders) {
     }
 
     function waterTank() {
+        pushMatrix();
         //Stretch cube on top of the shassis
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
@@ -489,6 +490,7 @@ function setup(shaders) {
         pushMatrix();
             gl.uniform4fv(u_color, outlineColor);
             CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
         popMatrix();
     }
 
@@ -514,9 +516,12 @@ function setup(shaders) {
         //lower and upper stairs elevate
         let color = vec4(0.3, 0.3, 0.3, 1);
         gl.uniform4fv(u_color, color);
+        
         multScale([1.3,0.9,1.3]);
+
         uploadModelView();
         CUBE.draw(gl, program, mode);
+
         pushMatrix();
             gl.uniform4fv(u_color, outlineColor);
             CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
@@ -554,6 +559,7 @@ function setup(shaders) {
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
                 popMatrix();
 
             popMatrix();
@@ -570,6 +576,7 @@ function setup(shaders) {
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
                 popMatrix();
 
             popMatrix();
@@ -587,6 +594,7 @@ function setup(shaders) {
                     pushMatrix();
                         gl.uniform4fv(u_color, outlineColor);
                         CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                        gl.uniform4fv(u_color, color);
                     popMatrix();
 
                 popMatrix();
@@ -599,8 +607,8 @@ function setup(shaders) {
     function lowerStair() {
     //Stair that stays in place
 
-    multTranslation([-0.8,-0.5,0]);
-    stair();
+        multTranslation([-0.8,-0.5,0]);
+        stair();
     }
 
     function upperStair() {
@@ -617,53 +625,56 @@ function setup(shaders) {
     function decalC() {
         pushMatrix();
 
-        let color = vec4(0.0, 0.0, 1.0, 1.0);
-        gl.uniform4fv(u_color, color);
-    
-        // Upper part
-        pushMatrix();
-            multTranslation([-0.2, 0.3, 0]);
-            multScale([0.2, 0.2, 0.01]);
-
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
-/*
+            let color = vec4(0.0, 0.0, 1.0, 1.0);
+            gl.uniform4fv(u_color, color);
+        
+            // Upper part
             pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
-*/
-        popMatrix();
-    
-        // Left part
-        pushMatrix();
-            multTranslation([-0.3, 0, 0]);
-            multScale([0.1, 0.6, 0.01]);
+                multTranslation([-0.2, 0.3, -0.001]);
+                multScale([0.2, 0.2, 0.01]);
 
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
-/*
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
-*/
-        popMatrix();
-    
-        // Lower part
-        pushMatrix();
-            multTranslation([-0.2, -0.3, 0]);
-            multScale([0.2, 0.2, 0.01]);
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
 
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
-/*
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+
             popMatrix();
-*/
-        popMatrix();
+        
+            // Left part
+            pushMatrix();
+                multTranslation([-0.3, 0, 0]);
+                multScale([0.1, 0.6, 0.01]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+
+            popMatrix();
+        
+            // Lower part
+            pushMatrix();
+                multTranslation([-0.2, -0.3, 0]);
+                multScale([0.2, 0.2, 0.01]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+
+            popMatrix();
     
         popMatrix();
     }
@@ -681,6 +692,13 @@ function setup(shaders) {
                 
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+
             popMatrix();
         
             // Left part
@@ -690,6 +708,13 @@ function setup(shaders) {
 
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+                
             popMatrix();
         
             // Lower part
@@ -699,15 +724,29 @@ function setup(shaders) {
 
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+
             popMatrix();
         
             // Right part
             pushMatrix();
-                multTranslation([-0.1, -0.13, 0]);
+                multTranslation([-0.1, -0.13, -0.001]);
                 multScale([0.05, 0.4, 0.01]);
                 
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    gl.uniform4fv(u_color, color);
+                popMatrix();
+                
             popMatrix();
         
             // Dot part
@@ -717,6 +756,12 @@ function setup(shaders) {
                 
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
+                
             popMatrix();
         
         popMatrix();
@@ -747,7 +792,9 @@ function setup(shaders) {
     
     function decal() {
         pushMatrix();
-            multTranslation([0,0,0.5]);
+        
+            multTranslation([1.4, 3,2.2]);
+            multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
 
             pushMatrix();
                 multTranslation([-0.1,0,0]);
@@ -755,12 +802,12 @@ function setup(shaders) {
             popMatrix();
 
             pushMatrix();
-                multTranslation([0.22,0,0]);
+                multTranslation([0.23,0,0]);
                 decalG();
             popMatrix();
 
             pushMatrix();
-                multTranslation([0.32,0,0]);
+                multTranslation([0.33,0,0]);
                 decalI();
             popMatrix();
         popMatrix();
