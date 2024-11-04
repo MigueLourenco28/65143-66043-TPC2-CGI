@@ -649,7 +649,79 @@ function setup(shaders) {
         popMatrix();
     }
     
+    function decalG() {
+        pushMatrix();
 
+        multTranslation([0,0,0.7]);
+
+        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Green color for `G`
+        gl.uniform4fv(u_color, color);
+    
+        // Top segment
+        pushMatrix();
+        multTranslation([-0.15, 0.4, 0]);
+        multScale([0.2, 0.2, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Left segment
+        pushMatrix();
+        multTranslation([-0.3, 0, 0]);
+        multScale([0.1, 0.8, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Bottom segment
+        pushMatrix();
+        multTranslation([-0.15, -0.4, 0]);
+        multScale([0.2, 0.2, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Right segment
+        pushMatrix();
+        multTranslation([-0.1, -0.13, 0]);
+        multScale([0.05, 0.4, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        // Inner horizontal segment
+        pushMatrix();
+        multTranslation([-0.1, 0, 0]);
+        multScale([0.1, 0.2, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        popMatrix();
+    }
+    
+
+
+
+    function decalI() {
+        pushMatrix();
+
+        multTranslation([0,0,0.7]);
+
+        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Red color for `I`
+        gl.uniform4fv(u_color, color);
+    
+        // Vertical segment
+        pushMatrix();
+        multTranslation([0, 0, 0]);
+        multScale([0.1, 0.8, 0.01]);
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+        popMatrix();
+    
+        popMatrix();
+    }
+    
     //-------FireTruck-------//
 
     function render() {
@@ -715,7 +787,6 @@ function setup(shaders) {
             // Water tank
             pushMatrix();
                 waterTank();
-                
             popMatrix();
             // Stairs      
             pushMatrix();         
