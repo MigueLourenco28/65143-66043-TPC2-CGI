@@ -591,6 +591,7 @@ function setup(shaders) {
 
                 popMatrix();
             }
+
         popMatrix();
     }
 
@@ -613,37 +614,55 @@ function setup(shaders) {
 
 
     // Decals
-
     function decalC() {
         pushMatrix();
 
-        multTranslation([0,0,0.7]);
-
-        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Blue color for `C`
+        let color = vec4(0.0, 0.0, 1.0, 1.0);
         gl.uniform4fv(u_color, color);
     
-        // Top segment
+        // Upper part
         pushMatrix();
-        multTranslation([-0.2, 0.4, 0]);
-        multScale([0.2, 0.2, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
+            multTranslation([-0.2, 0.3, 0]);
+            multScale([0.2, 0.2, 0.01]);
+
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+/*
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
+*/
         popMatrix();
     
-        // Left segment
+        // Left part
         pushMatrix();
-        multTranslation([-0.3, 0, 0]);
-        multScale([0.1, 0.8, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
+            multTranslation([-0.3, 0, 0]);
+            multScale([0.1, 0.6, 0.01]);
+
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+/*
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
+*/
         popMatrix();
     
-        // Bottom segment
+        // Lower part
         pushMatrix();
-        multTranslation([-0.2, -0.4, 0]);
-        multScale([0.2, 0.2, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
+            multTranslation([-0.2, -0.3, 0]);
+            multScale([0.2, 0.2, 0.01]);
+
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+/*
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+            popMatrix();
+*/
         popMatrix();
     
         popMatrix();
@@ -652,76 +671,100 @@ function setup(shaders) {
     function decalG() {
         pushMatrix();
 
-        multTranslation([0,0,0.7]);
+            let color = vec4(0.0, 0.0, 1.0, 1.0);
+            gl.uniform4fv(u_color, color);
+        
+            // Upper part
+            pushMatrix();
+                multTranslation([-0.15, 0.3, 0]);
+                multScale([0.2, 0.2, 0.01]);
+                
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+            popMatrix();
+        
+            // Left part
+            pushMatrix();
+                multTranslation([-0.3, 0, 0]);
+                multScale([0.1, 0.6, 0.01]);
 
-        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Green color for `G`
-        gl.uniform4fv(u_color, color);
-    
-        // Top segment
-        pushMatrix();
-        multTranslation([-0.15, 0.4, 0]);
-        multScale([0.2, 0.2, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
-    
-        // Left segment
-        pushMatrix();
-        multTranslation([-0.3, 0, 0]);
-        multScale([0.1, 0.8, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
-    
-        // Bottom segment
-        pushMatrix();
-        multTranslation([-0.15, -0.4, 0]);
-        multScale([0.2, 0.2, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
-    
-        // Right segment
-        pushMatrix();
-        multTranslation([-0.1, -0.13, 0]);
-        multScale([0.05, 0.4, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
-    
-        // Inner horizontal segment
-        pushMatrix();
-        multTranslation([-0.1, 0, 0]);
-        multScale([0.1, 0.2, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
-    
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+            popMatrix();
+        
+            // Lower part
+            pushMatrix();
+                multTranslation([-0.15, -0.3, 0]);
+                multScale([0.2, 0.2, 0.01]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+            popMatrix();
+        
+            // Right part
+            pushMatrix();
+                multTranslation([-0.1, -0.13, 0]);
+                multScale([0.05, 0.4, 0.01]);
+                
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+            popMatrix();
+        
+            // Dot part
+            pushMatrix();
+                multTranslation([-0.1, 0, 0]);
+                multScale([0.1, 0.2, 0.01]);
+                
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+            popMatrix();
+        
         popMatrix();
     }
     
-
-
-
     function decalI() {
         pushMatrix();
 
-        multTranslation([0,0,0.7]);
+            let color = vec4(0.0, 0.0, 1.0, 1.0);
+            gl.uniform4fv(u_color, color);
+        
+            pushMatrix();
+                multTranslation([0, 0, 0]);
+                multScale([0.1, 0.8, 0.01]);
 
-        let color = vec4(0.0, 0.0, 1.0, 1.0);  // Red color for `I`
-        gl.uniform4fv(u_color, color);
-    
-        // Vertical segment
-        pushMatrix();
-        multTranslation([0, 0, 0]);
-        multScale([0.1, 0.8, 0.01]);
-        uploadModelView();
-        CUBE.draw(gl, program, mode);
-        popMatrix();
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
+
+            popMatrix();
     
         popMatrix();
     }
     
+    function decal() {
+        pushMatrix();
+            multTranslation([0,0,0.5]);
+
+            pushMatrix();
+                multTranslation([-0.1,0,0]);
+                decalC();
+            popMatrix();
+
+            pushMatrix();
+                multTranslation([0.22,0,0]);
+                decalG();
+            popMatrix();
+
+            pushMatrix();
+                multTranslation([0.32,0,0]);
+                decalI();
+            popMatrix();
+        popMatrix();
+    }
     //-------FireTruck-------//
 
     function render() {
@@ -787,6 +830,7 @@ function setup(shaders) {
             // Water tank
             pushMatrix();
                 waterTank();
+                decal();
             popMatrix();
             // Stairs      
             pushMatrix();         
