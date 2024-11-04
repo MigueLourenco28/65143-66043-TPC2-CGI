@@ -44,12 +44,14 @@ function setup(shaders) {
         let input = event.key;
         switch (input) {
             case 'a':
-                truckPos -= 0.1;
-                wheelAngle += 1;
+                if(truckPos>-10.5)
+                    truckPos -= 0.1;
+                    wheelAngle += 1;
                 break;
             case 'd':
-                truckPos += 0.1;
-                wheelAngle -= 1;
+                if (truckPos<8)
+                    truckPos += 0.1;
+                    wheelAngle -= 1;
                 break;
             case 'q':
                 stairBaseAngle += 1;
@@ -465,38 +467,14 @@ function setup(shaders) {
             let blueLight = vec4(0.0, 0.0, 1.0, 1);
             let redLight = vec4(1.0, 0.0, 0.0, 1.0);
             let whiteSeperator = vec4(1.0, 1.0, 1.0, 1.0);
-            multTranslation([-3.75, 4.6, 0.0]);
+                gl.uniform4fv(u_color, color);
+            multTranslation([-3.7, 3.0, 0.0]);
+            multScale([2.25, 3.00, 4.0]);
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
             pushMatrix();
-                gl.uniform4fv(u_color, blueLight);
-                multTranslation([0.0, 0.0, -0.5]);
-                multScale([0.5, 0.25, 0.5]);
-                uploadModelView();
-                CUBE.draw(gl, program, mode);
-                pushMatrix();
-                    gl.uniform4fv(u_color, outlineColor);
-                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-                popMatrix();
-            popMatrix();
-            pushMatrix();
-                gl.uniform4fv(u_color, whiteSeperator);
-                multScale([0.5, 0.25, 0.5]);
-                uploadModelView();
-                CUBE.draw(gl, program, mode);
-                pushMatrix();
-                    gl.uniform4fv(u_color, outlineColor);
-                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-                popMatrix();
-            popMatrix();
-            pushMatrix();
-                gl.uniform4fv(u_color, redLight);
-                multTranslation([0.0, 0.0, 0.5]);
-                multScale([0.5, 0.25, 0.5]);
-                uploadModelView();
-                CUBE.draw(gl, program, mode);
-                pushMatrix();
-                    gl.uniform4fv(u_color, outlineColor);
-                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-                popMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
         popMatrix();
         //------Head Lights------//
@@ -645,7 +623,7 @@ function setup(shaders) {
     }
 
 
-    // Decals - Write each character on the sides of the truck
+    // Decals
     function decalC() {
         pushMatrix();
 
@@ -932,7 +910,7 @@ function setup(shaders) {
 
     function decal2() {
         pushMatrix();
-        
+
         let color = vec4(0.6, 0, 0, 1.0);
         gl.uniform4fv(u_color, color);
         
