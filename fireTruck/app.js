@@ -523,77 +523,91 @@ function setup(shaders) {
         popMatrix();
     }
 
-    function stair(tmp) {
-        const ladderSteps = 9 + 1; // Number of steps on the lower stair (change first number & ignore +1)
-        const railWidth = 0.16;
-        const railDepth = 0.16;
-        const stepHeight = 0.2; // Height of each step
-        const stepWidth = 1.5; // Width of each step
-        const stepDepth = railDepth; // Depth of each step
-        const stepSpacing = 0.6; // Increased spacing between steps
-        pushMatrix();
-        multRotationY(90);
-        multRotationX(tmp);
+    function stair() {
+        
+        const stairWidth = 0.16;
+        const stairDepth = stairWidth;
+        const stepNr = 8 + 2; // Number of steps on the lower stair (1st nr = nr of steps, 2nd nr = when 1st step starts)
+        const stepHeight = 0.2;
+        const stepWidth = 1.5;
+        const stepDepth = stairDepth-0.04;
+        const stepDistance = 0.4;
+        const stepSpace = stepHeight + stepDistance; // Space needed for each step
+        const stairHeight = stepNr * stepSpace;
 
-        // Create and position the left rail
         pushMatrix();
-            let color = vec4(0.3, 0.3, 0.3, 1);
-            gl.uniform4fv(u_color, color);
-            multTranslation([stepWidth/2*-1, 0.0, 0.0]);
-            multScale([railWidth, ladderSteps * (stepHeight + stepSpacing), railDepth]);
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
-        popMatrix();
 
-        // Create and position the right rail
-        pushMatrix();
-            multTranslation([stepWidth/2, 0.0, 0.0]);
-            multScale([railWidth, ladderSteps * (stepHeight + stepSpacing), railDepth]);
-            uploadModelView();
-            CUBE.draw(gl, program, mode);
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
-        popMatrix();
+            multRotationY(90);
+            multRotationX(-90);
 
-        // Create and position each step
-        for (let i = 2; i < ladderSteps; i++) {
+            // Left side
             pushMatrix();
-                multTranslation([0.0, i * (stepHeight + stepSpacing) - (ladderSteps * (stepHeight + stepSpacing)) / 2 + stepHeight / 2, 0.0]);
-                multScale([stepWidth, stepHeight, stepDepth]);
+                let color = vec4(0.3, 0.3, 0.3, 1);
+                gl.uniform4fv(u_color, color);
+
+                multTranslation([stepWidth/2*-1, 0, 0]);
+                multScale([stairWidth, stairHeight, stairDepth]);
+
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
+
             popMatrix();
-        }
+
+            // Right side
+            pushMatrix();
+
+                multTranslation([stepWidth/2, 0, 0]);
+                multScale([stairWidth, stairHeight, stairDepth]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
+
+            popMatrix();
+
+            // Steps
+            for (let i = 2; i < stepNr; i++) { // i=2 creates space for connection with stairBaseElevation
+                pushMatrix();
+
+                    multTranslation([0, i * stepSpace - stairHeight/2 , 0]); // stairHeight/2 centers steps
+                    multScale([stepWidth, stepHeight, stepDepth]);
+
+                    uploadModelView();
+                    CUBE.draw(gl, program, mode);
+
+                    pushMatrix();
+                        gl.uniform4fv(u_color, outlineColor);
+                        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                    popMatrix();
+
+                popMatrix();
+            }
         popMatrix();
-
-
-        
-
     }
 
 
     function lowerStair() {
     //Stair that stays in place
-    multTranslation([-1.3,-0.5,0]);
-    stair(-90);
 
+    multTranslation([-0.8,-0.5,0]);
+    stair();
     }
 
     function upperStair() {
         //Stair that extends
+        
         pushMatrix();
             multTranslation([-0.08,0.16,0]);
-            stair(-90);
+            stair();
         popMatrix();
     }
 
