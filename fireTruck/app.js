@@ -5,7 +5,6 @@ import { modelView, loadMatrix, multRotationY, multScale, multTranslation, pushM
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
-import * as PYRAMID from '../../libs/objects/pyramid.js';
 
 /** @type WebGLRenderingContext */
 let gl;
@@ -1106,7 +1105,7 @@ function setup(shaders) {
 
         pushMatrix();
 
-        let color = vec4(0, 1, 0, 1.0);
+        let color = vec4(1, 1, 1, 1.0);
         gl.uniform4fv(u_color, color);
         
             // Outer Torus
@@ -1155,11 +1154,32 @@ function setup(shaders) {
 
                 uploadModelView();
                 TORUS.draw(gl, program, mode);
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     TORUS.draw(gl, program, gl.LINES); // Draw torus outline in wireframe
                 popMatrix();
+
             popMatrix();
+
+            // Hose
+            pushMatrix();
+
+                multTranslation([0.4, 0, 0]);
+                multRotationX(90);
+                multRotationZ(90);
+                multScale([0.2, 0.2 , 0.2]);
+        
+                uploadModelView();
+                CYLINDER.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CYLINDER.draw(gl, program, gl.LINES); // Draw cylinder outline in wireframe
+                popMatrix();
+        
+            popMatrix();
+
         popMatrix();
     }
 
