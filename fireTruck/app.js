@@ -7,6 +7,8 @@ import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
 /** @type WebGLRenderingContext */
+let VP_DISTANCE = 12;
+
 let gl;
 
 let time = 0;           // Global simulation time in days
@@ -21,8 +23,9 @@ let ladderInclination = 0; // Angle of the ladder in the z axis
 let upperLadderPos = 0.0; // Position of the upper stairs 
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 let view = 4; // View
+let zoom = VP_DISTANCE;
 
-const VP_DISTANCE = 12;
+
 
 
 function setup(shaders) {
@@ -106,6 +109,16 @@ function setup(shaders) {
                 break;
         }
     }
+
+    document.addEventListener('wheel', function(event) {
+        if (event.deltaY < 0) {
+            VP_DISTANCE -= 0.5; // Zoom in
+        } else {
+            VP_DISTANCE += 0.5; // Zoom out
+        }
+        resize_canvas();
+    });
+    
 
     gl.clearColor(0.4, 0.1, 0.1, 1.0);
     CYLINDER.init(gl);
