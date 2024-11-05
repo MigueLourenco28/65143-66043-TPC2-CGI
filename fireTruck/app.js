@@ -1381,7 +1381,7 @@ function setup(shaders) {
         popMatrix();
     }
 
-
+    //Assemble all decals on the truck
     function decal() {
         pushMatrix();
 
