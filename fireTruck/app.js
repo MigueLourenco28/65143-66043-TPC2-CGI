@@ -61,7 +61,7 @@ function setup(shaders) {
                 break;
             case 'w':
                 // TODO: Implement ladder movement
-                if(ladderInclination < 90)
+                if(ladderInclination < 55)
                     ladderInclination += 1;
                 break;
             case 's':
@@ -167,35 +167,53 @@ function setup(shaders) {
     function poles() {
         //Bases
         pushMatrix();
+
             let baseColor = vec4(0.1, 0.1, 0.1, 1.0);
             gl.uniform4fv(u_color, baseColor);
+
             multTranslation([-6.0, 0.0, -8.0]);
             multScale([2.0, 0.2, 2.0]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, baseColor);
+
             multTranslation([6.0, 0.0, -8.0]);
             multScale([2.0, 0.2, 2.0]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
         popMatrix();
+
         //Poles
         pushMatrix();
+
             let poleColor = vec4(0.4, 0.4, 0.4, 1.0);
             gl.uniform4fv(u_color, poleColor);
+
             multTranslation([-6.0, 5.0, -8.0]);
             multScale([0.5, 10.0, 0.5]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, poleColor);
+
             multTranslation([6.0, 5.0, -8.0]);
             multScale([0.5, 10.0, 0.5]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
         popMatrix();
     }
 
@@ -203,50 +221,79 @@ function setup(shaders) {
     function entrance() {
         //Wall
         pushMatrix();
+
             let wallColor = vec4(0.4, 0.4, 0.4, 1.0);
             gl.uniform4fv(u_color, wallColor);
+
             multTranslation([-12.5, 9.0, -0.4]);
             multScale([0.2, 2.5, 25.0]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, wallColor);
+
             multTranslation([-12.5, 4.4, -7.9]);
             multScale([0.2, 9.0, 10.0]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, wallColor);
+
             multTranslation([-12.5, 4.4, 8.35]);
             multScale([0.2, 9.0, 7.5]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         //Garage door
         pushMatrix();
+
             let doorBorderColor = vec4(1.0, 1.0, 1.0, 1.0);
             gl.uniform4fv(u_color, doorBorderColor);
+
             multTranslation([-12.5, 3.9, 4.75]);
             multScale([0.3, 8.0, 0.3]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, doorBorderColor);
+
             multTranslation([-12.5, 3.9, -3.0]);
             multScale([0.3, 8.0, 0.3]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, doorBorderColor);
+
             multTranslation([-12.5, 7.75, 0.9]);
             multRotationX(90);
             multScale([0.3, 8.0, 0.3]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
     }
 
@@ -274,6 +321,7 @@ function setup(shaders) {
         const rimRadius = 0.5; // Slightly smaller than the tire radius
 
         multRotationX(90);
+
         for (let i = 0; i < numberOfSpokes; i++) {
             pushMatrix();        
                 // Set color for the rim and spokes
@@ -289,10 +337,12 @@ function setup(shaders) {
 
                 uploadModelView();
                 CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
+
             popMatrix();
         }   
         //----------Rim----------//
@@ -301,15 +351,18 @@ function setup(shaders) {
     // Cylinders that connect each pair of wheels (front and back)
     function wheelConnector() {
         pushMatrix();
+
             let color = vec4(0.5, 0.5, 0.5, 1.0);
             gl.uniform4fv(u_color, color);
 
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
     }
 
@@ -362,16 +415,21 @@ function setup(shaders) {
         //----------Wheel Connectors----------//
         //----------Chassis Cover----------//
         pushMatrix();
+
             let color = vec4(1.0, 0.0, 0.0, 1);
             gl.uniform4fv(u_color, color);
+
             multTranslation([0.0, 1.0, 0.0]);
             multScale([10.0, 0.5, 3.5]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
         //----------Chassis Cover----------//
     }
@@ -380,10 +438,13 @@ function setup(shaders) {
     function truckBase() {
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
+
         multTranslation([0.0, 1.5, 0.0]);
         multScale([10.0, 0.5, 4.5]);
+
         uploadModelView();
         CUBE.draw(gl, program, mode);
+
         pushMatrix();
             gl.uniform4fv(u_color, outlineColor);
             CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
@@ -394,97 +455,142 @@ function setup(shaders) {
         //Stretch cube to be on the side of the chassis
         //----------Front Bumper----------//
         pushMatrix();
+
             let color = vec4(1.0, 1.0, 1.0, 1);
             gl.uniform4fv(u_color, color);
+
             multTranslation([-5.11, 1.0, 0.0]);
             multScale([0.25, 0.5, 4.5]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([-4.5, 1.0, 2.0]);
             multScale([1.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([-4.5, 1.0, -2.0]);
             multScale([1.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
         //----------Front Bumper----------//
         //----------Side Bumpers----------//
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([0.0, 1.0, 2.0]);
             multScale([4.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([0.0, 1.0, -2.0]);
             multScale([4.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
         //----------Side Bumpers----------//
         //----------Back Bumper----------//
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([5.11, 1.0, 0.0]);
             multScale([0.25, 0.5, 4.5]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([4.5, 1.0, 2.0]);
             multScale([1.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, color);
+
             multTranslation([4.5, 1.0, -2.0]);
             multScale([1.5, 0.5, 0.4]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
         //----------Back Bumper----------//
     }
@@ -493,100 +599,147 @@ function setup(shaders) {
     function cabin() {
         //Stretch cube on top of the shassis
         pushMatrix();
+
             let color = vec4(1.0, 0.0, 0.0, 1);
             gl.uniform4fv(u_color, color);
+
             multTranslation([-3.7, 3.0, 0.0]);
             multScale([2.25, 3.00, 4.0]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
         //------Windows------//
         pushMatrix();
+
             let windowColor = vec4(0.6, 0.6, 0.9, 1.0);
             gl.uniform4fv(u_color, windowColor);
+
             multTranslation([-4.8, 3.5, 0.0]);
             multScale([0.25, 1.5, 3.5]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, windowColor);
+
             multTranslation([-3.9, 3.5, 2.0]);
             multRotationY(90);
             multScale([0.25, 1.5, 1.25]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, windowColor);
+
             multTranslation([-3.9, 3.5, -2.0]);
             multRotationY(90);
             multScale([0.25, 1.5, 1.25]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
         popMatrix();
         //------Windows------//
         //------Blinkers------//
         pushMatrix();
+
             let blinkerColor = vec4(1.0, 1.0, 0.0, 1.0);
             gl.uniform4fv(u_color, blinkerColor);
+
             multTranslation([-4.75, 2.25, 1.5]);
             multRotationZ(90);
             multScale([0.5, 0.25, 0.5]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
         popMatrix();
+
         pushMatrix();
+
             gl.uniform4fv(u_color, blinkerColor);
+
             multTranslation([-4.75, 2.25, -1.5]);
             multRotationZ(90);
             multScale([0.5, 0.25, 0.5]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
         popMatrix();
         //------Blinkers------//
         //------Head Lights------//
         pushMatrix();
+
             let blueLight = vec4(0.0, 0.0, 1.0, 1);
             let redLight = vec4(1.0, 0.0, 0.0, 1.0);
             let whiteSeperator = vec4(1.0, 1.0, 1.0, 1.0);
+
             multTranslation([-3.75, 4.6, 0.0]);
+
             pushMatrix();
+
                 gl.uniform4fv(u_color, blueLight);
+
                 multTranslation([0.0, 0.0, -0.5]);
                 multScale([0.5, 0.25, 0.5]);
+
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
+
             popMatrix();
+
             pushMatrix();
+
                 gl.uniform4fv(u_color, whiteSeperator);
+
                 multScale([0.5, 0.25, 0.5]);
+
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
+
             popMatrix();
+
             pushMatrix();
+
                 gl.uniform4fv(u_color, redLight);
+
                 multTranslation([0.0, 0.0, 0.5]);
                 multScale([0.5, 0.25, 0.5]);
+
                 uploadModelView();
                 CUBE.draw(gl, program, mode);
+
                 pushMatrix();
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
+
             popMatrix();
+
         popMatrix();
         //------Head Lights------//
     }
@@ -596,14 +749,18 @@ function setup(shaders) {
             //Stretch cube on top of the shassis
             let color = vec4(1.0, 0.0, 0.0, 1);
             gl.uniform4fv(u_color, color);
+
             multTranslation([1.25, 3.0, 0.0]);
             multScale([7.0, 2.5, 4.0]);
+
             uploadModelView();
             CUBE.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
     }
 
@@ -611,15 +768,20 @@ function setup(shaders) {
     function stairBaseRotation() {
         //Shorten cylinder on top of the waterTank (rotates)
         pushMatrix();
+
             let color = vec4(1.0, 0.45, 0.0, 1);
             gl.uniform4fv(u_color, color);
+
             multScale([2.2, 0.7, 2.2]);
+
             uploadModelView();
             CYLINDER.draw(gl, program, mode);
+
             pushMatrix();
                 gl.uniform4fv(u_color, outlineColor);
                 CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
+
         popMatrix();
     }
 
@@ -660,6 +822,7 @@ function setup(shaders) {
 
             // Left side
             pushMatrix();
+            
                 let color = vec4(0.3, 0.3, 0.3, 1);
                 gl.uniform4fv(u_color, color);
 
@@ -719,14 +882,16 @@ function setup(shaders) {
 
     function lowerStair() {
         //Stair that stays in place
-        multTranslation([-0.8,-0.5,0]);
-        stair();
+        pushMatrix();
+            multTranslation([-0.7,-0.6,0]);
+            stair();
+        popMatrix();
     }
 
     function upperStair() {
         //Stair that extends
         pushMatrix();
-            multTranslation([-0.08,0.16,0]);
+            multTranslation([-0.78,-0.42,0]);
             stair();
         popMatrix();
     }
@@ -735,11 +900,13 @@ function setup(shaders) {
     // Decals - Write each character on the sides of the truck
     function decalC() {
         pushMatrix();
+
             let color = vec4(0.6, 0, 0 , 1.0);
             gl.uniform4fv(u_color, color);
         
-            // Upper part
+            // Upper line
             pushMatrix();
+
                 multTranslation([-0.2, 0.3, -0.001]);
                 multScale([0.2, 0.2, 0.01]);
 
@@ -751,9 +918,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
+
             popMatrix();
-            // Left part
+
+            // Left line
             pushMatrix();
+
                 multTranslation([-0.3, 0, 0]);
                 multScale([0.1, 0.6, 0.01]);
 
@@ -768,8 +938,9 @@ function setup(shaders) {
 
             popMatrix();
         
-            // Lower part
+            // Lower line
             pushMatrix();
+
                 multTranslation([-0.2, -0.3, -0.001]);
                 multScale([0.2, 0.2, 0.01]);
 
@@ -783,7 +954,7 @@ function setup(shaders) {
                 popMatrix();
 
             popMatrix();
-    
+
         popMatrix();
     }
     
@@ -793,8 +964,9 @@ function setup(shaders) {
             let color = vec4(0.6, 0, 0, 1.0);
             gl.uniform4fv(u_color, color);
         
-            // Upper part
+            // Upper line
             pushMatrix();
+
                 multTranslation([-0.15, 0.3, 0]);
                 multScale([0.2, 0.2, 0.01]);
                 
@@ -809,8 +981,9 @@ function setup(shaders) {
 
             popMatrix();
         
-            // Left part
+            // Left line
             pushMatrix();
+
                 multTranslation([-0.3, 0, 0]);
                 multScale([0.1, 0.6, 0.01]);
 
@@ -822,11 +995,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Lower part
+            // Lower line
             pushMatrix();
+
                 multTranslation([-0.15, -0.3, 0]);
                 multScale([0.2, 0.2, 0.01]);
 
@@ -841,8 +1015,9 @@ function setup(shaders) {
 
             popMatrix();
         
-            // Right part
+            // Right line
             pushMatrix();
+
                 multTranslation([-0.1, -0.13, -0.004]);
                 multScale([0.05, 0.4, 0.01]);
                 
@@ -857,8 +1032,9 @@ function setup(shaders) {
                 
             popMatrix();
         
-            // Dot part
+            // Dot
             pushMatrix();
+
                 multTranslation([-0.1, 0, 0]);
                 multScale([0.1, 0.2, 0.01]);
                 
@@ -869,9 +1045,9 @@ function setup(shaders) {
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                 popMatrix();
-                
+
             popMatrix();
-        
+
         popMatrix();
     }
     
@@ -894,7 +1070,7 @@ function setup(shaders) {
                 popMatrix();
 
             popMatrix();
-    
+
         popMatrix();
     }
     
@@ -904,8 +1080,9 @@ function setup(shaders) {
             let color = vec4(0.6, 0, 0, 1.0);
             gl.uniform4fv(u_color, color);
         
-            // Upper part
+            // Upper line
             pushMatrix();
+
                 multTranslation([0, 0.8, 0]);
                 multScale([2.0, 0.4, 0.01]);
 
@@ -917,11 +1094,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Middle part
+            // Middle line
             pushMatrix();
+
                 multTranslation([0, 0, 0]);
                 multScale([0.4, 2.0, 0.01]);
                 
@@ -935,18 +1113,19 @@ function setup(shaders) {
                 popMatrix();
 
             popMatrix();
-    
+
         popMatrix();
     }
     
     function decalP() {
         pushMatrix();
-        
+
             let color = vec4(0.6, 0, 0, 1.0);            
             gl.uniform4fv(u_color, color);
         
-            // Vertical part
+            // Vertical line
             pushMatrix();
+
                 multTranslation([-0.8, 0, 0]);
                 multScale([0.4, 2.0, 0.01]);
                 
@@ -958,11 +1137,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Upper horizontal part
+            // Upper horizontal line
             pushMatrix();
+
                 multTranslation([0, 0.8, 0]);
                 multScale([1.2, 0.4, 0.01]);
 
@@ -974,11 +1154,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Right vertical part
+            // Right vertical line
             pushMatrix();
+
                 multTranslation([0.8, 0.4, 0]);
                 multScale([0.4, 1.2, 0.01]);
 
@@ -990,11 +1171,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
 
-            // Bottom horizontal part
+            // Bottom horizontal line
             pushMatrix();
+
                 multTranslation([0, 0, 0]);
                 multScale([1.2, 0.4, 0.01]);
 
@@ -1006,7 +1188,7 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
 
         popMatrix();
@@ -1015,11 +1197,12 @@ function setup(shaders) {
     function decal2() {
         pushMatrix();
 
-        let color = vec4(0.6, 0, 0, 1.0);
-        gl.uniform4fv(u_color, color);
+            let color = vec4(0.6, 0, 0, 1.0);
+            gl.uniform4fv(u_color, color);
         
-            // Top segment
+            // Top line
             pushMatrix();
+
                 multTranslation([0, 0.8, 0]);
                 multScale([2.0, 0.4, 0.01]);
 
@@ -1034,8 +1217,9 @@ function setup(shaders) {
                 
             popMatrix();
         
-            // Right segment top
+            // Right line top
             pushMatrix();
+
                 multTranslation([0.8, 0.4, 0]);
                 multScale([0.4, 1.2, 0.01]);
 
@@ -1050,8 +1234,9 @@ function setup(shaders) {
                 
             popMatrix();
         
-            // Middle segment
+            // Middle line
             pushMatrix();
+
                 multTranslation([0, 0, 0]);
                 multScale([2.0, 0.4, 0.01]);
 
@@ -1063,10 +1248,10 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Left segment bottom
+            // Left line bottom
             pushMatrix();
                 multTranslation([-0.8, -0.4, 0]);
                 multScale([0.4, 1.2, 0.01]);
@@ -1079,11 +1264,12 @@ function setup(shaders) {
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
         
-            // Bottom segment
+            // Bottom line
             pushMatrix();
+
                 multTranslation([0, -0.8, 0]);
                 multScale([2.0, 0.4, 0.01]);
 
@@ -1094,10 +1280,10 @@ function setup(shaders) {
                     gl.uniform4fv(u_color, outlineColor);
                     CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
                     gl.uniform4fv(u_color, color);
-                popMatrix();
-                
+                popMatrix();  
+
             popMatrix();
-        
+
         popMatrix();
     }
 
@@ -1110,6 +1296,7 @@ function setup(shaders) {
         
             // Outer Torus
             pushMatrix();
+
                 multTranslation([0, 0, 0]);
                 multRotationX(90);
                 multRotationZ(90);
@@ -1123,7 +1310,7 @@ function setup(shaders) {
                     TORUS.draw(gl, program, gl.LINES); // Draw torus outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
 
             // Inner Torus
@@ -1141,7 +1328,7 @@ function setup(shaders) {
                     TORUS.draw(gl, program, gl.LINES); // Draw torus outline in wireframe
                     gl.uniform4fv(u_color, color);
                 popMatrix();
-                
+
             popMatrix();
 
             // Inner inner Torus
@@ -1177,7 +1364,7 @@ function setup(shaders) {
                     gl.uniform4fv(u_color, outlineColor);
                     CYLINDER.draw(gl, program, gl.LINES); // Draw cylinder outline in wireframe
                 popMatrix();
-        
+
             popMatrix();
 
         popMatrix();
@@ -1233,6 +1420,8 @@ function setup(shaders) {
         popMatrix();
 
     }
+
+
     //-------FireTruck-------//
 
     function render() {
@@ -1307,6 +1496,9 @@ function setup(shaders) {
             // Water tank
             pushMatrix();
                 waterTank();
+            popMatrix();
+            // Decals
+            pushMatrix();
                 decal();
             popMatrix();
             // Stairs      
@@ -1314,16 +1506,19 @@ function setup(shaders) {
                 multTranslation([3.2,4.4,0.0]);
                 multRotationY(stairBaseAngle);
                 stairBaseRotation();
+
                 pushMatrix();
                     multTranslation([0.0,0.8,0.0]);
                     stairBaseElevation();
                     multRotationZ(-ladderInclination);
+
                     pushMatrix();
                         multTranslation([-2.0,0.5,0.0]);
                         multScale([1.0, 1.0, 0.75]);
                         lowerStair();  
                         multTranslation([-upperLadderPos, 0.0, 0.0]);                     
                         upperStair();
+
                     popMatrix();
                 popMatrix(); 
             popMatrix();
@@ -1331,6 +1526,7 @@ function setup(shaders) {
         //---------Fire Truck---------//
     }
 }
+
 
 const urls = ["shader.vert", "shader.frag"];
 loadShadersFromURLS(urls).then(shaders => setup(shaders))
