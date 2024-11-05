@@ -60,22 +60,18 @@ function setup(shaders) {
                 stairBaseAngle -= 1.0;
                 break;
             case 'w':
-                // TODO: Implement ladder movement
                 if(ladderInclination < 55)
                     ladderInclination += 1;
                 break;
             case 's':
-                // TODO: Implement ladder movement
                 if(ladderInclination > 0)
                     ladderInclination -= 1;
                 break;
             case 'o':
-                // TODO: Implement ladder movement
                 if(upperLadderPos < 4.65)
                     upperLadderPos += 0.1;
                 break;
             case 'p':
-                // TODO: Implement ladder movement
                 if(upperLadderPos > 0.0)
                     upperLadderPos -= 0.1;
                 break;
@@ -101,9 +97,11 @@ function setup(shaders) {
                 view = input;
                 break;
             case 'ArrowLeft':
+                if (theta <19)
                 theta += 1;
                 break;
             case 'ArrowRight':
+                if (theta >-21)
                 theta -= 1;
                 break;
         }
@@ -1373,7 +1371,7 @@ function setup(shaders) {
 
     function decal() {
         pushMatrix();
-        
+
             multTranslation([1.4, 3,2]);
             multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
 
