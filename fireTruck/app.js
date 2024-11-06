@@ -17,16 +17,13 @@ let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
 let theta = 10; // Camera angle of the axonometric projection
 let truckPos = 0.0;   // Position of truck in the x axis
+let doorPos = 0.9; // Position of the door in the y axis
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
 let upperLadderPos = 0.0; // Position of the upper stairs 
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
-let view = 4; // View
-let zoom = VP_DISTANCE;
-
-
-
+let view = 4; // Current View
 
 function setup(shaders) {
     let canvas = document.getElementById("gl-canvas");
@@ -47,14 +44,14 @@ function setup(shaders) {
         let input = event.key;
         switch (input) {
             case 'a':
-                if(truckPos>-10.5)
+                if(truckPos > -10.5)
                     truckPos -= 0.1;
                     wheelAngle += 1;
                 break;
             case 'd':
-                if (truckPos<8)
+                if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= 1;
+                    wheelAngle -= 1.0;
                 break;
             case 'q':
                 stairBaseAngle += 1;
@@ -78,11 +75,23 @@ function setup(shaders) {
                 if(upperLadderPos > 0.0)
                     upperLadderPos -= 0.1;
                 break;
+            case 'n':
+                if(doorPos < 6.5)
+                    doorPos += 0.1;
+                break;
+            case 'm':
+                if(doorPos > 0.9)
+                    doorPos -= 0.1;
+                break;
             case ' ':
                 if(mode == gl.LINES)
                     mode = gl.TRIANGLES;
                 else
                     mode = gl.LINES;
+                break;
+            case 'r':
+                VP_DISTANCE = 12;
+                theta = 10;
                 break;
             case '4':
                 view = input;
@@ -101,11 +110,11 @@ function setup(shaders) {
                 break;
             case 'ArrowLeft':
                 if (theta <19)
-                theta += 1;
+                theta += 0.5;
                 break;
             case 'ArrowRight':
                 if (theta >-21)
-                theta -= 1;
+                theta -= 0.5;
                 break;
         }
     }
@@ -118,7 +127,6 @@ function setup(shaders) {
         }
         resize_canvas();
     });
-    
 
     gl.clearColor(0.4, 0.1, 0.1, 1.0);
     CYLINDER.init(gl);
@@ -228,6 +236,113 @@ function setup(shaders) {
         popMatrix();
     }
 
+    function elevatingDoor() {
+        pushMatrix();
+
+            let doorBorderColor = vec4(1.0, 1.0, 1.0, 1.0);
+            gl.uniform4fv(u_color, doorBorderColor);
+
+            multTranslation([0.0, -0.85, 0.0]);
+            multRotationX(90);
+            multScale([0.3, 8.0, 0.3]);
+
+            uploadModelView();
+            CUBE.draw(gl, program, mode);
+
+        popMatrix();
+
+        let plackPos = -1.5;
+        for(let i = 0; i < 5; i++) {  
+            plackPos += 1.5;
+            pushMatrix();
+
+                let doorColor = vec4(0.5, 0.5, 0.5, 1.0);
+                gl.uniform4fv(u_color, doorColor);
+
+                multTranslation([0.0, plackPos, 0.0]);
+                multScale([0.1, 1.5, 7.5]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
+
+            popMatrix();
+        }
+    }
+
+    function clock() {
+        pushMatrix();
+
+            let clockBorderColor = vec4(0.1, 0.1, 0.1, 1);
+            gl.uniform4fv(u_color, clockBorderColor);
+
+            multTranslation([0.0, 6.0, 8.0]);
+            multRotationZ(90);
+            multScale([2.2, 0.7, 2.2]);
+
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+
+        popMatrix();
+
+        pushMatrix();
+
+            let clockInteriorColor = vec4(1.0, 1.0, 1.0, 1);
+            gl.uniform4fv(u_color, clockInteriorColor);
+
+            multTranslation([0.01, 6.0, 8.0]);
+            multRotationZ(90);
+            multScale([1.75, 0.7, 1.75]);
+
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+
+        popMatrix();
+
+        pushMatrix();
+
+            gl.uniform4fv(u_color, clockBorderColor);
+
+            multTranslation([0.02, 6.0, 8.0]);
+            multRotationZ(90);
+            multScale([0.1, 0.7, 0.1]);
+
+            uploadModelView();
+            CYLINDER.draw(gl, program, mode);
+
+            //Clock hands
+            //Hour hand
+            pushMatrix();
+
+                gl.uniform4fv(u_color, clockBorderColor);
+
+                multRotationY(360 * time / 20);
+                multScale([2.0, 1.0, 2.0]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+            popMatrix();
+            //Minute hand
+            pushMatrix();
+
+                gl.uniform4fv(u_color, clockBorderColor);
+
+                multRotationY(360 * time / 20);
+                multScale([2.0, 1.0, 5.0]);
+
+                uploadModelView();
+                CUBE.draw(gl, program, mode);
+
+            popMatrix();
+
+        popMatrix();
+    }
+
     //Entrance/exit of the truck to/from the fire department
     function entrance() {
         //Wall
@@ -306,6 +421,16 @@ function setup(shaders) {
             CUBE.draw(gl, program, mode);
 
         popMatrix();
+
+        //Clock
+        pushMatrix();
+            multTranslation([-12.5, 0.9, 0.9]);
+            clock();
+        popMatrix();
+
+        //Elevating door
+        multTranslation([-12.5, doorPos, 0.9]);
+        elevatingDoor();
     }
 
     // Make a wheel composed by a tire and rim for the fire truck
@@ -1431,18 +1556,37 @@ function setup(shaders) {
         popMatrix();
 
     }
-
-
     //-------FireTruck-------//
 
-    function render() {
-        if (animation && time < 0.11) {
-            time += 0.01;
-        }
+    //-------1/4 View-------//
 
-        if (!animation && time > 0) {
-            time -= 0.01;
-        }
+    // Set up the 1/4 view layout in 'view 0'
+    function renderQuarterView() {
+        // Left View
+        gl.viewport(0, canvas.height / 2, canvas.width / 2, canvas.height / 2);
+        loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]));
+        renderScene();
+
+        // Front View
+        gl.viewport(canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2);
+        loadMatrix(lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]));
+        renderScene();
+
+        // Top View
+        gl.viewport(0, 0, canvas.width / 2, canvas.height / 2);
+        loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]));
+        renderScene();
+
+        // Axonometric Projection View
+        gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height / 2);
+        loadMatrix(lookAt([5, 5, theta + 1], [0, 0, 0], [0, 1, 0]));
+        renderScene();
+    }
+
+    //-------1/4 View-------//
+
+    function render() {
+        if (animation) time += speed;
 
         // if (animation) time += speed;
 
@@ -1456,7 +1600,7 @@ function setup(shaders) {
 
         switch (view) {
             case '4':
-                loadMatrix(lookAt([5, 5, theta + 1], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+                loadMatrix(lookAt([5, 5, theta], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
                 break;
             case '3':
                 loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
@@ -1468,7 +1612,8 @@ function setup(shaders) {
                 loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0])); // Left View
                 break;
             case '0':
-                loadMatrix(lookAt([0, 0, 0], [0, 0, 0], [0, 0, 1])); // 1/4 View
+                //TODO: 1/4 View
+                renderQuarterView();
                 break;
         } 
 
@@ -1517,19 +1662,16 @@ function setup(shaders) {
                 multTranslation([3.2,4.4,0.0]);
                 multRotationY(stairBaseAngle);
                 stairBaseRotation();
-
                 pushMatrix();
                     multTranslation([0.0,0.8,0.0]);
                     stairBaseElevation();
                     multRotationZ(-ladderInclination);
-
                     pushMatrix();
                         multTranslation([-2.0,0.5,0.0]);
                         multScale([1.0, 1.0, 0.75]);
                         lowerStair();  
                         multTranslation([-upperLadderPos, 0.0, 0.0]);                     
                         upperStair();
-
                     popMatrix();
                 popMatrix(); 
             popMatrix();
