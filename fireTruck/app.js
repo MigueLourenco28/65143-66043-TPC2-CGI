@@ -7,7 +7,7 @@ import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
 /** @type WebGLRenderingContext */
-let VP_DISTANCE = 12;
+let zoom = 12;
 
 let gl;
 
@@ -15,14 +15,18 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 let mode;               // Drawing mode (gl.LINES or gl.TRIANGLES)
 let animation = false; // Animation is running
-let theta = 10; // Camera angle of the axonometric projection
+
 let truckPos = 0.0;   // Position of truck in the x axis
 let doorPos = 0.9; // Position of the door in the y axis
+let upperLadderPos = 0.0; // Position of the upper stairs
+
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
-let upperLadderPos = 0.0; // Position of the upper stairs 
+ 
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
+
+let theta = 10; // Camera angle of the axonometric projection
 let view = 4; // Current View
 
 function setup(shaders) {
@@ -33,7 +37,7 @@ function setup(shaders) {
 
     let program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
 
-    let mProjection = ortho(-VP_DISTANCE * aspect, VP_DISTANCE * aspect, -VP_DISTANCE, VP_DISTANCE, -3 * VP_DISTANCE, 3 * VP_DISTANCE);
+    let mProjection = ortho(-zoom * aspect, zoom * aspect, -zoom, zoom, -3 * zoom, 3 * zoom);
 
     mode = gl.TRIANGLES;
 
@@ -90,7 +94,7 @@ function setup(shaders) {
                     mode = gl.LINES;
                 break;
             case 'r':
-                VP_DISTANCE = 12;
+                zoom = 12;
                 theta = 10;
                 break;
             case '4':
@@ -121,9 +125,9 @@ function setup(shaders) {
 
     document.addEventListener('wheel', function(event) {
         if (event.deltaY < 0) {
-            VP_DISTANCE -= 0.5; // Zoom in
+            zoom -= 0.5; // Zoom in
         } else {
-            VP_DISTANCE += 0.5; // Zoom out
+            zoom += 0.5; // Zoom out
         }
         resize_canvas();
     });
@@ -137,14 +141,14 @@ function setup(shaders) {
     window.requestAnimationFrame(render);
 
 
-    function resize_canvas(event) {
+    function resize_canvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
         aspect = canvas.width / canvas.height;
 
         gl.viewport(0, 0, canvas.width, canvas.height);
-        mProjection = ortho(-VP_DISTANCE * aspect, VP_DISTANCE * aspect, -VP_DISTANCE, VP_DISTANCE, -3 * VP_DISTANCE, 3 * VP_DISTANCE);
+        mProjection = ortho(-zoom * aspect, zoom * aspect, -zoom, zoom, -3 * zoom, 3 * zoom);
     }
 
     function uploadModelView() {
@@ -1560,28 +1564,7 @@ function setup(shaders) {
 
     //-------1/4 View-------//
 
-    // Set up the 1/4 view layout in 'view 0'
-    function renderQuarterView() {
-        // Left View
-        gl.viewport(0, canvas.height / 2, canvas.width / 2, canvas.height / 2);
-        loadMatrix(lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]));
-        renderScene();
-
-        // Front View
-        gl.viewport(canvas.width / 2, canvas.height / 2, canvas.width / 2, canvas.height / 2);
-        loadMatrix(lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]));
-        renderScene();
-
-        // Top View
-        gl.viewport(0, 0, canvas.width / 2, canvas.height / 2);
-        loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]));
-        renderScene();
-
-        // Axonometric Projection View
-        gl.viewport(canvas.width / 2, 0, canvas.width / 2, canvas.height / 2);
-        loadMatrix(lookAt([5, 5, theta + 1], [0, 0, 0], [0, 1, 0]));
-        renderScene();
-    }
+    
 
     //-------1/4 View-------//
 
@@ -1613,7 +1596,6 @@ function setup(shaders) {
                 break;
             case '0':
                 //TODO: 1/4 View
-                renderQuarterView();
                 break;
         } 
 
