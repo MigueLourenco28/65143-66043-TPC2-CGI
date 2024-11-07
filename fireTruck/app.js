@@ -33,7 +33,8 @@ let ladderInclination = 0; // Angle of the ladder in the z axis
  
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 
-let theta = 10; // Camera angle of the axonometric projection
+let theta = 10; // Horizontal camera angle of the axonometric projection
+let gamma = 10; // Vertical camera angle of the axonometric projection
 let view = 4; // Current View
 
 function setup(shaders) {
@@ -121,11 +122,19 @@ function setup(shaders) {
                 break;
             case 'ArrowLeft':
                 if (theta <19)
-                theta += 0.5;
+                    theta += 0.5;
                 break;
             case 'ArrowRight':
                 if (theta >-21)
-                theta -= 0.5;
+                    theta -= 0.5;
+                break;
+            case 'ArrowUp':
+                if (gamma <19)
+                    gamma += 0.5;
+                break;
+            case 'ArrowDown':
+                if (gamma >-21)
+                    gamma -= 0.5;
                 break;
         }
     }
@@ -185,7 +194,7 @@ function render() {
 
     switch (view) {
         case '4':
-            loadMatrix(lookAt([5, 5, theta], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+            loadMatrix(lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
             break;
         case '3':
             loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
