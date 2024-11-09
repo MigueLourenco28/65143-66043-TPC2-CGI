@@ -2,12 +2,12 @@
 
 precision mediump float;
 
-uniform vec4 u_base_color;
-
 in vec3 v_normal;
 
-out vec4 frag_color;
+out vec4 color;
+
+uniform vec4 u_color;
 
 void main() {
-    frag_color = u_base_color;
+    color = u_color;
 }
