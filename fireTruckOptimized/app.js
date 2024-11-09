@@ -1,4 +1,4 @@
-import { lookAt, ortho, mat4, vec3, flatten, normalMatrix } from '../../libs/MV.js';
+import { lookAt, ortho, mat4, vec3, vec4, flatten, normalMatrix } from '../../libs/MV.js';
 import { loadShadersFromURLS, buildProgramFromSources, setupWebGL } from '../../libs/utils.js';
 import { modelView, loadMatrix, pushMatrix, popMatrix } from '../../libs/stack.js';
 
@@ -8,7 +8,26 @@ import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as PYRAMID from '../../libs/objects/pyramid.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
+import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
+import { entrance, floor, poles } from './scenery.js';
+
+export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, updateModelView, gl };
+
 const DIST = 10;
+
+let u_color;
+let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
+
+let animation = false; // Animation is running
+let mode;
+
+let truckPos = 0.0;   // Position of truck in the x axis
+let doorPos = 0.9; // Position of the door in the y axis
+let upperLadderPos = 0.0; // Position of the upper stairs
+
+let wheelAngle = 0; // Angle of a wheel in the z axis
+let stairBaseAngle = 0; // Angle of the stair base in the y axis
+let ladderInclination = 0; // Angle of the ladder in the z axis
 
 let all_views = true;
 
@@ -19,12 +38,17 @@ let projection = mat4();
 let zoom = 10;
 let aspect = 1.0;
 
-front_view = lookAt(vec3(0, 0, DIST), vec3(0, 0, 0), vec3(0, 1, 0));
-top_view = front_view;
-left_view = front_view;
-axo_view = front_view
-big_view = front_view;
+let theta = 10; // Horizontal camera angle of the axonometric projection
+let gamma = 10; // Vertical camera angle of the axonometric projection
 
+front_view = lookAt(vec3(0, 0, DIST), vec3(0, 0, 0), vec3(0, 1, 0));
+top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
+left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
+axo_view = lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])
+big_view = axo_view;
+
+let time = 0;           // Global simulation time in days
+let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 
 /** @type{WebGL2RenderingContext} */
 let gl;
@@ -34,6 +58,120 @@ let program;
 
 /** @type{HTMLCanvasElement} */
 let canvas;
+
+function main(shaders) {
+    canvas = document.getElementById("gl-canvas");
+    gl = setupWebGL(canvas);
+    program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
+
+    u_color = gl.getUniformLocation(program, "u_color");
+
+    mode = gl.TRIANGLES;
+
+    gl.clearColor(0.7, 0.7, 0.7, 1.0);
+
+    gl.enable(gl.DEPTH_TEST);
+
+    resize();
+    window.addEventListener('keydown', function (event) {
+        let input = event.key;
+        switch (input) {
+            case 'a':
+                if(truckPos > -10.5)
+                    truckPos -= 0.1;
+                    wheelAngle += 1;
+                break;
+            case 'd':
+                if (truckPos < 8.0)
+                    truckPos += 0.1;
+                    wheelAngle -= 1.0;
+                break;
+            case 'q':
+                stairBaseAngle += 1;
+                break;
+            case 'e':
+                stairBaseAngle -= 1.0;
+                break;
+            case 'w':
+                if(ladderInclination < 55)
+                    ladderInclination += 1;
+                break;
+            case 's':
+                if(ladderInclination > 0)
+                    ladderInclination -= 1;
+                break;
+            case 'o':
+                if(upperLadderPos < 4.65)
+                    upperLadderPos += 0.1;
+                break;
+            case 'p':
+                if(upperLadderPos > 0.0)
+                    upperLadderPos -= 0.1;
+                break;
+            case 'n':
+                if(doorPos < 6.5)
+                    doorPos += 0.1;
+                break;
+            case 'm':
+                if(doorPos > 0.9)
+                    doorPos -= 0.1;
+                break;
+            case ' ':
+                if(mode == gl.LINES)
+                    mode = gl.TRIANGLES;
+                else
+                    mode = gl.LINES;
+                break;
+            case 'r':
+                zoom = 12;
+                theta = 10;
+                gamma = 10;
+                break;
+            case '4':
+                big_view = axo_view;
+                break;
+            case '3':
+                big_view = top_view;
+                break;
+            case '2':
+                big_view = left_view;
+                break;
+            case '1':
+                big_view = front_view;
+                break;
+            case '0': toggle_view_mode();
+                break;
+            case 'ArrowLeft':
+                if (theta <19)
+                    theta += 0.5;
+                break;
+            case 'ArrowRight':
+                if (theta >-21)
+                    theta -= 0.5;
+                break;
+            case 'ArrowUp':
+                if (gamma <19)
+                    gamma += 0.5;
+                break;
+            case 'ArrowDown':
+                if (gamma >-21)
+                    gamma -= 0.5;
+                break;
+        }
+    })
+    window.addEventListener('resize', resize);
+    window.addEventListener("wheel", function (event) {
+        zoom *= 1 + (event.deltaY / 1000);
+    });
+
+    initialize_objects();
+
+    // This is needed to let wireframe lines to be visible on top of shaded triangles
+    gl.enable(gl.POLYGON_OFFSET_FILL);
+    gl.polygonOffset(1, 1);
+
+    window.requestAnimationFrame(render);
+}
 
 function updateModelView(gl, program, modelView) {
     const u_model_view = gl.getUniformLocation(program, "u_model_view");
@@ -65,38 +203,6 @@ function initialize_objects() {
     TORUS.init(gl, 30, 30, 0.8, 0.2);
 }
 
-function main(shaders) {
-    canvas = document.getElementById("gl-canvas");
-    gl = setupWebGL(canvas);
-    program = buildProgramFromSources(gl, shaders["shader.vert"], shaders["shader.frag"]);
-
-    gl.clearColor(0.7, 0.7, 0.7, 1.0);
-
-    gl.enable(gl.DEPTH_TEST);
-
-    resize();
-    window.addEventListener('keydown', function (event) {
-        switch (event.key) {
-            case '0': toggle_view_mode();
-        }
-    })
-    window.addEventListener('resize', resize);
-    window.addEventListener("wheel", function (event) {
-        zoom *= 1 + (event.deltaY / 1000);
-    });
-
-    initialize_objects();
-
-    // This is needed to let wireframe lines to be visible on top of shaded triangles
-    gl.enable(gl.POLYGON_OFFSET_FILL);
-    gl.polygonOffset(1, 1);
-
-    window.requestAnimationFrame(render);
-}
-
-
-
-
 function draw_scene(view) {
     gl.useProgram(program);
 
@@ -105,9 +211,64 @@ function draw_scene(view) {
 
     loadMatrix(view);
 
+    // Scene graph traversal code goes here...
+    //---------Scenery---------//
+    //Floor
     pushMatrix();
-    updateModelView(gl, program, modelView());
-    TORUS.draw(gl, program, gl.LINES);
+        floor();
+    popMatrix();
+    //Poles
+    pushMatrix();
+        poles();
+    popMatrix();
+    //Entrance
+    pushMatrix();
+        entrance();
+    popMatrix();
+    //---------Scenery---------//
+    //---------Fire Truck---------//
+    pushMatrix();
+        multTranslation([1.0 + truckPos, 0.0, 1.0]);
+        // Wheels and wheel connectors
+        chassis();
+        // Truck Base
+        pushMatrix();
+            multTranslation([0.0, 0.0, 0.0]);
+            truckBase();
+        popMatrix();
+        pushMatrix();
+            bumpers();
+        popMatrix();
+        // Cabin
+        pushMatrix();
+            cabin();
+        popMatrix();
+        // Water tank
+        pushMatrix();
+            waterTank();
+        popMatrix();
+        // Decals
+        pushMatrix();
+            decal();
+        popMatrix();
+        // Stairs      
+        pushMatrix();         
+            multTranslation([3.2,4.4,0.0]);
+            multRotationY(stairBaseAngle);
+            stairBaseRotation();
+            pushMatrix();
+                multTranslation([0.0,0.8,0.0]);
+                stairBaseElevation();
+                multRotationZ(-ladderInclination);
+                pushMatrix();
+                    multTranslation([-2.0,0.5,0.0]);
+                    multScale([1.0, 1.0, 0.75]);
+                    lowerStair();  
+                    multTranslation([-upperLadderPos, 0.0, 0.0]);                     
+                    upperStair();
+                popMatrix();
+            popMatrix(); 
+        popMatrix();
     popMatrix();
 }
 
@@ -139,6 +300,7 @@ function draw_views() {
 }
 
 function render() {
+    if (animation) time += speed;
     window.requestAnimationFrame(render);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
