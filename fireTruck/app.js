@@ -34,7 +34,7 @@ let ladderInclination = 0; // Angle of the ladder in the z axis
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 
 let theta = 10; // Horizontal camera angle of the axonometric projection
-let gamma = 10; // Vertical camera angle of the axonometric projection
+let gamma = 9; // Vertical camera angle of the axonometric projection
 let view = 4; // Current View
 
 function setup(shaders) {
@@ -58,12 +58,12 @@ function setup(shaders) {
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;
-                    wheelAngle += 1;
+                    wheelAngle += 5; //TODO
                 break;
             case 'd':
                 if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= 1.0;
+                    wheelAngle -= 5; //TODO
                 break;
             case 'q':
                 stairBaseAngle += 1;
@@ -104,6 +104,7 @@ function setup(shaders) {
             case 'r':
                 zoom = 12;
                 theta = 10;
+                gamma = 9;
                 break;
             case '4':
                 view = input;
@@ -122,19 +123,19 @@ function setup(shaders) {
                 break;
             case 'ArrowLeft':
                 if (theta <19)
-                    theta += 0.5;
+                    theta += 0.1;
                 break;
             case 'ArrowRight':
                 if (theta >-21)
-                    theta -= 0.5;
+                    theta -= 0.1;
                 break;
             case 'ArrowUp':
                 if (gamma <19)
-                    gamma += 0.5;
+                    gamma -= 0.1;
                 break;
             case 'ArrowDown':
                 if (gamma >-21)
-                    gamma -= 0.5;
+                    gamma += 0.1;
                 break;
         }
     }
@@ -192,9 +193,15 @@ function render() {
 
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_projection"), false, flatten(mProjection));
 
+    let eyeX = 5 * Math.cos(theta) * Math.cos(gamma);
+    let eyeY = 5 * Math.sin(gamma);
+    let eyeZ = 5 * Math.sin(theta) * Math.cos(gamma);
+
+    
+    
     switch (view) {
         case '4':
-            loadMatrix(lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
+            loadMatrix(lookAt([eyeX, eyeY, eyeZ], [0, 0, 0], [0, 1, 0])); // Axonometric Projection View
             break;
         case '3':
             loadMatrix(lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1])); // Top View
