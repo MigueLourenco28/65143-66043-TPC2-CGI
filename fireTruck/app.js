@@ -8,7 +8,7 @@ import * as TORUS from '../../libs/objects/torus.js';
 import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
 import { entrance, floor, poles } from './scenery.js';
 
-export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, uploadModelView, gl };
+export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, uploadModelView, gl };
 
 /** @type WebGLRenderingContext */
 let zoom = 12;
@@ -27,10 +27,16 @@ let truckPos = 0.0;   // Position of truck in the x axis
 let doorPos = 0.9; // Position of the door in the y axis
 let upperLadderPos = 0.0; // Position of the upper stairs
 
-const wheelRadius = 1;
+const WHEELRADIUS = 1;
 let wheelAngle = 0; // Angle of a wheel in the z axis
+
+const DEFAULTSTEPNR = 8;
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
+let stepWidth = 1.6; // Width of all ladders' steps
+let stepNr = DEFAULTSTEPNR;
+const STAIRWIDTH = 0.2;
+
  
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 
@@ -59,12 +65,12 @@ function setup(shaders) {
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;
-                    wheelAngle += truckPos*wheelRadius; //TODO
+                    wheelAngle += truckPos*WHEELRADIUS; //TODO
                 break;
             case 'd':
                 if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= truckPos*wheelRadius; //TODO
+                    wheelAngle -= truckPos*WHEELRADIUS; //TODO
                 break;
             case 'q':
                 stairBaseAngle += 1;
@@ -107,6 +113,21 @@ function setup(shaders) {
                 theta = 10;
                 gamma = 9;
                 break;
+            case 'l':           //EXTRAS
+                stepWidth+=0.1;
+                break;
+            case 'ç':           //EXTRAS
+                if (stepWidth >STAIRWIDTH*3)
+                    stepWidth-=0.1;
+                break;     
+            case ',':           //EXTRAS
+                stepNr+=1;
+                break;
+            case '.':           //EXTRAS
+                if (stepNr >1)
+                    stepNr-=1;
+                break;                  
+                
             case '4':
                 view = input;
                 break;
@@ -269,7 +290,6 @@ function render() {
                 multRotationZ(-ladderInclination);
                 pushMatrix();
                     multTranslation([-2.0,0.5,0.0]);
-                    multScale([1.0, 1.0, 0.75]);
                     lowerStair();  
                     multTranslation([-upperLadderPos, 0.0, 0.0]);                     
                     upperStair();

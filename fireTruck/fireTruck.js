@@ -3,7 +3,7 @@ import { multRotationY, multScale, multTranslation, pushMatrix, popMatrix, multR
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
-import { outlineColor, program, u_color, mode, uploadModelView, wheelAngle, gl } from "./app.js";
+import { outlineColor, program, u_color, mode, uploadModelView, wheelAngle, stepWidth,STAIRWIDTH,stepNr, gl } from "./app.js";
 
 export { wheel, wheelConnector, chassis, truckBase, bumpers, cabin, waterTank, stairBaseRotation, stairBaseElevation, lowerStair, upperStair, decalC, decalG, decalI, decalT, decalP, decal2, decal, firehose };
 
@@ -146,18 +146,20 @@ function chassis() {
 
 //Base for the upper part of the truck
 function truckBase() {
-    let color = vec4(1.0, 0.0, 0.0, 1);
-    gl.uniform4fv(u_color, color);
-
-    multTranslation([0.0, 1.5, 0.0]);
-    multScale([10.0, 0.5, 4.5]);
-
-    uploadModelView();
-    CUBE.draw(gl, program, mode);
-
     pushMatrix();
-        gl.uniform4fv(u_color, outlineColor);
-        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        gl.uniform4fv(u_color, color);
+
+        multTranslation([0.0, 1.5, 0.0]);
+        multScale([10.0, 0.5, 4.5]);
+
+        uploadModelView();
+        CUBE.draw(gl, program, mode);
+
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     popMatrix();
 }
 
@@ -499,36 +501,43 @@ function stairBaseRotation() {
 function stairBaseElevation() {
     //Cube stays in place
     //lower and upper stairs elevate
-    let color = vec4(0.3, 0.3, 0.3, 1);
-    gl.uniform4fv(u_color, color);
-    
-    multScale([1.3,0.9,1.3]);
-
-    uploadModelView();
-    CUBE.draw(gl, program, mode);
-
     pushMatrix();
-        gl.uniform4fv(u_color, outlineColor);
-        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        const width = stepWidth;
+
+        let color = vec4(0.3, 0.3, 0.3, 1);
+        gl.uniform4fv(u_color, color);
+        
+        multScale([width,0.9,width]);
+
+        uploadModelView();
+        //CUBE.draw(gl, program, mode);
+
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     popMatrix();
 }
 
 function stair() {
     
-    const stairWidth = 0.16;
-    const stairDepth = stairWidth;
-    const stepNr = 8 + 2; // Number of steps on the lower stair (1st nr = nr of steps, 2nd nr = when 1st step starts)
-    const stepHeight = 0.2;
-    const stepWidth = 1.5;
+
+    const stairDepth = STAIRWIDTH;
+    const stepCount = stepNr; // Number of steps on the lower stair (+2 is when 1st step starts)
+    const stepHeight = STAIRWIDTH;
     const stepDepth = stairDepth-0.04;
-    const stepDistance = 0.4;
+    const stepDistance = STAIRWIDTH*2;
     const stepSpace = stepHeight + stepDistance; // Space needed for each step
-    const stairHeight = stepNr * stepSpace;
+    const gap = stepWidth*1;
+    const stairHeight = stepCount * stepSpace + gap;
+    const compensationTrans = stepSpace*stepCount/2; // Adjusts stair position when stepCount changes
+    const minDistance = stepSpace -1 ; // Base stair position
 
     pushMatrix();
-
+//compensationTrans/2-minDistance
         multRotationY(90);
         multRotationX(-90);
+        multTranslation([0,compensationTrans,0]);
 
         // Left side
         pushMatrix();
@@ -536,8 +545,8 @@ function stair() {
             let color = vec4(0.3, 0.3, 0.3, 1);
             gl.uniform4fv(u_color, color);
 
-            multTranslation([stepWidth/2*-1, 0, 0]);
-            multScale([stairWidth, stairHeight, stairDepth]);
+            multTranslation([(stepWidth+STAIRWIDTH)/2*-1, 0, 0]);
+            multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             uploadModelView();
             CUBE.draw(gl, program, mode);
@@ -553,8 +562,8 @@ function stair() {
         // Right side
         pushMatrix();
 
-            multTranslation([stepWidth/2, 0, 0]);
-            multScale([stairWidth, stairHeight, stairDepth]);
+            multTranslation([(stepWidth+STAIRWIDTH)/2, 0, 0]);
+            multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             uploadModelView();
             CUBE.draw(gl, program, mode);
@@ -568,10 +577,10 @@ function stair() {
         popMatrix();
 
         // Steps
-        for (let i = 2; i < stepNr; i++) { // i=2 creates space for connection with stairBaseElevation
+        for (let i = 0; i < stepCount; i++) { // i=2 creates space for connection with stairBaseElevation
             pushMatrix();
 
-                multTranslation([0, i * stepSpace - stairHeight/2 , 0]); // stairHeight/2 centers steps
+                multTranslation([0, i * stepSpace - stairHeight/2 +gap, 0]); // stairHeight/2 centers steps
                 multScale([stepWidth, stepHeight, stepDepth]);
 
                 uploadModelView();
@@ -593,7 +602,7 @@ function stair() {
 function lowerStair() {
     //Stair that stays in place
     pushMatrix();
-        multTranslation([-0.7,-0.6,0]);
+        multTranslation([1.7,-0.6,0]);
         stair();
     popMatrix();
 }
@@ -601,7 +610,7 @@ function lowerStair() {
 function upperStair() {
     //Stair that extends
     pushMatrix();
-        multTranslation([-0.78,-0.42,0]);
+        multTranslation([1.6,-0.4,0]);
         stair();
     popMatrix();
 }
