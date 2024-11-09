@@ -1,11 +1,9 @@
 import { lookAt, ortho, mat4, vec3, vec4, flatten, normalMatrix } from '../../libs/MV.js';
 import { loadShadersFromURLS, buildProgramFromSources, setupWebGL } from '../../libs/utils.js';
-import { modelView, loadMatrix, pushMatrix, popMatrix } from '../../libs/stack.js';
+import { modelView, loadMatrix, pushMatrix, popMatrix, multRotationX, multRotationZ, multRotationY, multScale, multTranslation } from '../../libs/stack.js';
 
 import * as CUBE from '../../libs/objects/cube.js';
-import * as SPHERE from '../../libs/objects/sphere.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
-import * as PYRAMID from '../../libs/objects/pyramid.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
 import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
@@ -22,14 +20,14 @@ let animation = false; // Animation is running
 let mode;
 
 let truckPos = 0.0;   // Position of truck in the x axis
-let doorPos = 0.9; // Position of the door in the y axis
+let doorPos = 6.5; // Position of the door in the y axis
 let upperLadderPos = 0.0; // Position of the upper stairs
 
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
 
-let all_views = true;
+let all_views = false;
 
 let big_view, front_view, left_view, top_view, axo_view;
 
@@ -40,12 +38,6 @@ let aspect = 1.0;
 
 let theta = 10; // Horizontal camera angle of the axonometric projection
 let gamma = 10; // Vertical camera angle of the axonometric projection
-
-front_view = lookAt(vec3(0, 0, DIST), vec3(0, 0, 0), vec3(0, 1, 0));
-top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
-left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
-axo_view = lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])
-big_view = axo_view;
 
 let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
@@ -68,7 +60,7 @@ function main(shaders) {
 
     mode = gl.TRIANGLES;
 
-    gl.clearColor(0.7, 0.7, 0.7, 1.0);
+    gl.clearColor(0.4, 0.1, 0.1, 1.0);
 
     gl.enable(gl.DEPTH_TEST);
 
@@ -158,11 +150,18 @@ function main(shaders) {
                     gamma -= 0.5;
                 break;
         }
-    })
+    });
+    
     window.addEventListener('resize', resize);
     window.addEventListener("wheel", function (event) {
         zoom *= 1 + (event.deltaY / 1000);
     });
+
+    front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
+    top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
+    left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
+    axo_view = lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])
+    big_view = axo_view;
 
     initialize_objects();
 
@@ -173,11 +172,8 @@ function main(shaders) {
     window.requestAnimationFrame(render);
 }
 
-function updateModelView(gl, program, modelView) {
-    const u_model_view = gl.getUniformLocation(program, "u_model_view");
-    gl.uniformMatrix4fv(u_model_view, false, flatten(modelView));
-    const u_normals = gl.getUniformLocation(program, "u_normals");
-    gl.uniformMatrix4fv(u_normals, false, flatten(normalMatrix(modelView)));
+function updateModelView() {
+    gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_model_view"), false, flatten(modelView()));
 }
 
 function updateProjection(gl, program, projection) {
@@ -197,10 +193,8 @@ function resize() {
 
 function initialize_objects() {
     CUBE.init(gl);
-    SPHERE.init(gl);
     CYLINDER.init(gl);
-    PYRAMID.init(gl);
-    TORUS.init(gl, 30, 30, 0.8, 0.2);
+    TORUS.init(gl);
 }
 
 function draw_scene(view) {
