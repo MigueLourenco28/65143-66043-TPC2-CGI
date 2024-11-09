@@ -480,11 +480,12 @@ function waterTank() {
 function stairBaseRotation() {
     //Shorten cylinder on top of the waterTank (rotates)
     pushMatrix();
+        const width = stepWidth*1.5;
 
         let color = vec4(1.0, 0.45, 0.0, 1);
         gl.uniform4fv(u_color, color);
 
-        multScale([2.2, 0.7, 2.2]);
+        multScale([width, 0.5, width]);
 
         uploadModelView();
         CYLINDER.draw(gl, program, mode);
@@ -507,10 +508,10 @@ function stairBaseElevation() {
         let color = vec4(0.3, 0.3, 0.3, 1);
         gl.uniform4fv(u_color, color);
         
-        multScale([width,0.9,width]);
+        multScale([width,1,width]);
 
         uploadModelView();
-        //CUBE.draw(gl, program, mode);
+        CUBE.draw(gl, program, mode);
 
         pushMatrix();
             gl.uniform4fv(u_color, outlineColor);

@@ -281,11 +281,11 @@ function render() {
         popMatrix();
         // Stairs      
         pushMatrix();         
-            multTranslation([3.2,4.4,0.0]);
+            multTranslation([3.2,4.5,0.0]);
             multRotationY(stairBaseAngle);
             stairBaseRotation();
             pushMatrix();
-                multTranslation([0.0,0.8,0.0]);
+                multTranslation([0.0,0.7,0.0]);
                 stairBaseElevation();
                 multRotationZ(-ladderInclination);
                 pushMatrix();
