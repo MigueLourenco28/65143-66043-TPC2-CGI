@@ -27,6 +27,7 @@ let truckPos = 0.0;   // Position of truck in the x axis
 let doorPos = 0.9; // Position of the door in the y axis
 let upperLadderPos = 0.0; // Position of the upper stairs
 
+const wheelRadius = 1;
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
@@ -58,12 +59,12 @@ function setup(shaders) {
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;
-                    wheelAngle += 5; //TODO
+                    wheelAngle += truckPos*wheelRadius; //TODO
                 break;
             case 'd':
                 if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= 5; //TODO
+                    wheelAngle -= truckPos*wheelRadius; //TODO
                 break;
             case 'q':
                 stairBaseAngle += 1;
