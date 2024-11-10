@@ -11,8 +11,6 @@ import { entrance, floor, poles } from './scenery.js';
 
 export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, updateModelView, gl };
 
-const DIST = 10;
-
 let u_color;
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 
@@ -37,7 +35,7 @@ let zoom = 10;
 let aspect = 1.0;
 
 let theta = 10; // Horizontal camera angle of the axonometric projection
-let gamma = 10; // Vertical camera angle of the axonometric projection
+let gamma = 9; // Vertical camera angle of the axonometric projection
 
 let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
@@ -117,7 +115,7 @@ function main(shaders) {
             case 'r':
                 zoom = 12;
                 theta = 10;
-                gamma = 10;
+                gamma = 9;
                 break;
             case '4':
                 big_view = axo_view;
@@ -135,19 +133,19 @@ function main(shaders) {
                 break;
             case 'ArrowLeft':
                 if (theta <19)
-                    theta += 0.5;
+                    theta += 0.05;
                 break;
             case 'ArrowRight':
                 if (theta >-21)
-                    theta -= 0.5;
+                    theta -= 0.05;
                 break;
             case 'ArrowUp':
                 if (gamma <19)
-                    gamma += 0.5;
+                    gamma -= 0.05;
                 break;
             case 'ArrowDown':
                 if (gamma >-21)
-                    gamma -= 0.5;
+                    gamma += 0.05;
                 break;
         }
     });
@@ -156,12 +154,6 @@ function main(shaders) {
     window.addEventListener("wheel", function (event) {
         zoom *= 1 + (event.deltaY / 1000);
     });
-
-    front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
-    top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
-    left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
-    axo_view = lookAt([theta, gamma, 5], [0, 0, 0], [0, 1, 0])
-    big_view = axo_view;
 
     initialize_objects();
 
@@ -296,6 +288,16 @@ function draw_views() {
 function render() {
     if (animation) time += speed;
     window.requestAnimationFrame(render);
+
+    let eyeX = 5 * Math.cos(theta) * Math.cos(gamma);
+    let eyeY = 5 * Math.sin(gamma);
+    let eyeZ = 5 * Math.sin(theta) * Math.cos(gamma);
+
+    front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
+    top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
+    left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
+    axo_view = lookAt([eyeX, eyeY, eyeZ], [0, 0, 0], [0, 1, 0]);
+    big_view = axo_view;
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     draw_views();

@@ -64,7 +64,7 @@ function poles() {
     //Poles
     pushMatrix();
 
-        let poleColor = vec4(0.4, 0.4, 0.4, 1.0);
+        let poleColor = vec4(0.7, 0.7, 0.7, 1.0);
         gl.uniform4fv(u_color, poleColor);
 
         multTranslation([-6.0, 5.0, -8.0]);
@@ -202,8 +202,8 @@ function entrance() {
         let wallColor = vec4(0.4, 0.4, 0.4, 1.0);
         gl.uniform4fv(u_color, wallColor);
 
-        multTranslation([-12.5, 9.0, -0.4]);
-        multScale([0.2, 2.5, 25.0]);
+        multTranslation([-12.5, 11.0, -0.4]);
+        multScale([0.2, 7, 25.0]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
