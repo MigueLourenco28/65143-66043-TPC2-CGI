@@ -261,17 +261,21 @@ function draw_scene(view) {
     //---------Fire Truck---------//
     pushMatrix();
         multTranslation([1.0 + truckPos, 0.0, 1.0]);
-        // Wheels and wheel connectors
-        chassis();
-        // Truck Base
         pushMatrix();
-            truckBase();
-        popMatrix();
-        pushMatrix();
-            bumpers();
+            //multScale([1,1,1]);
+            // Wheels and wheel connectors
+            chassis();
+            // Truck Base
+            pushMatrix();
+                truckBase();
+            popMatrix();
+            pushMatrix();
+                bumpers();
+            popMatrix();
         popMatrix();
         // Cabin
         pushMatrix();
+            //multTranslation([-stepWidth*3+4.8,0,0]);
             cabin();
         popMatrix();
         // Water tank
