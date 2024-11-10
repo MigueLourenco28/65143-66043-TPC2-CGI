@@ -45,10 +45,12 @@ let projection = mat4();
 let zoom = 10;
 let aspect = 1.0;
 
-
-
 let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
+
+const WHEELRADIUS = 1;
+
+
 
 /** @type{WebGL2RenderingContext} */
 let gl;
@@ -79,12 +81,12 @@ function main(shaders) {
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;
-                    wheelAngle += 1;
+                    wheelAngle += truckPos*WHEELRADIUS;
                 break;
             case 'd':
                 if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= 1.0;
+                    wheelAngle -= truckPos*WHEELRADIUS;
                 break;
             case 'q':
                 stairBaseAngle += 1;
