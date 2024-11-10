@@ -261,7 +261,6 @@ function render() {
         chassis();
         // Truck Base
         pushMatrix();
-            multTranslation([0.0, 0.0, 0.0]);
             truckBase();
         popMatrix();
         pushMatrix();

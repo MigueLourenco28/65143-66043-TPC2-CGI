@@ -1092,7 +1092,8 @@ function firehose() {
 
 //Assemble all decals on the truck
 function decal() {
-    const size = Math.min(STAIRWIDTH*1.2 + stepWidth*0.2,1);
+    //Math.min(stepWidth*0.2+1,stepWidth*0.2)
+    const size = Math.min(stepWidth*0.6,1);
 
     pushMatrix();
 
