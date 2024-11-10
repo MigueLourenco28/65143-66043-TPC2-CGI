@@ -4,7 +4,7 @@ import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import { outlineColor, program, u_color, mode, updateModelView, time, doorPos, gl } from "./app.js";
 
-export { floor, poles, entrance };
+export { floor, poles, entrance, clock };
 
 //Base ground for the fire truck
 function floor() {

@@ -7,7 +7,7 @@ import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
 import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
-import { entrance, floor, poles } from './scenery.js';
+import { entrance, floor, poles, clock } from './scenery.js';
 
 export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, updateModelView, gl };
 
@@ -263,6 +263,9 @@ function draw_scene(view) {
     //Entrance
     pushMatrix();
         entrance();
+    popMatrix();
+    pushMatrix();
+        clock();
     popMatrix();
     //---------Scenery---------//
     //---------Fire Truck---------//
