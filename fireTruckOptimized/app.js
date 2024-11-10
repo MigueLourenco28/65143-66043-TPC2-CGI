@@ -276,7 +276,7 @@ function draw_scene(view) {
         popMatrix();
         // Cabin
         pushMatrix();
-            multTranslation([-stepWidth*3+4.8,0,0]);
+            multTranslation([-stepWidth*2.922+4.8,0,0]);
             cabin();
         popMatrix();
         // Water tank
