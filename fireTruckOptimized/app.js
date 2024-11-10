@@ -57,7 +57,7 @@ const DEFAULTSTEPNR = 8;
 let stepWidth = MAX_SIZE; // Width of all ladders' steps
 let stepNr = DEFAULTSTEPNR;
 const STAIRWIDTH = 0.2;
-
+const MIN_SIZE = STAIRWIDTH*3;
 
 
 
@@ -189,7 +189,7 @@ function main(shaders) {
                     stepWidth += 0.1;
                 break;
             case '.':
-                if (stepWidth > STAIRWIDTH*3)
+                if (stepWidth > MIN_SIZE)
                 stepWidth -= 0.1;
                 break;
         }
@@ -262,7 +262,8 @@ function draw_scene(view) {
     pushMatrix();
         multTranslation([1.0 + truckPos, 0.0, 1.0]);
         pushMatrix();
-            //multScale([1,1,1]);
+            multScale([stepWidth/1.5,1,stepWidth/1.6]); //STAIRWIDTH*3
+            multTranslation([-3.0*(stepWidth-MIN_SIZE)+stepWidth+1.4,0,0]);
             // Wheels and wheel connectors
             chassis();
             // Truck Base
@@ -275,7 +276,7 @@ function draw_scene(view) {
         popMatrix();
         // Cabin
         pushMatrix();
-            //multTranslation([-stepWidth*3+4.8,0,0]);
+            multTranslation([-stepWidth*3+4.8,0,0]);
             cabin();
         popMatrix();
         // Water tank
