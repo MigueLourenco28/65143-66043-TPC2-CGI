@@ -3,7 +3,7 @@ import { multRotationY, multScale, multTranslation, pushMatrix, popMatrix, multR
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
-import { outlineColor, program, u_color, mode, updateModelView, wheelAngle, gl, STAIR_WIDTH, stepNr, stepWidth} from "./app.js";
+import { outlineColor, program, u_color, mode, updateModelView, wheelAngle, stepWidth,STAIRWIDTH,stepNr, gl } from "./app.js";
 
 export { wheel, wheelConnector, chassis, truckBase, bumpers, cabin, waterTank, stairBaseRotation, stairBaseElevation, lowerStair, upperStair, decalC, decalG, decalI, decalT, decalP, decal2, decal, firehose };
 
@@ -26,37 +26,35 @@ function wheel() {
     popMatrix();
     //----------Tire----------//
     //----------Rim----------//
-    pushMatrix();
-        const numberOfSpokes = 20; // Increased density for spokes
-        const spokeRadius = 0.03;
-        const rimRadius = 0.5; // Slightly smaller than the tire radius
+    const numberOfSpokes = 20; // Increased density for spokes
+    const spokeRadius = 0.03;
+    const rimRadius = 0.5; // Slightly smaller than the tire radius
 
-        multRotationX(90);
+    multRotationX(90);
 
-        for (let i = 0; i < numberOfSpokes; i++) {
-            pushMatrix();        
-                // Set color for the rim and spokes
-                gl.uniform4fv(u_color, rimColor); // Gray color for the rim
+    for (let i = 0; i < numberOfSpokes; i++) {
+        pushMatrix();        
+            // Set color for the rim and spokes
+            gl.uniform4fv(u_color, rimColor); // Gray color for the rim
 
-                // Rotate each spoke around the wheel center
-                const angle = (360 / numberOfSpokes) * i;
-                multRotationZ(angle);
+            // Rotate each spoke around the wheel center
+            const angle = (360 / numberOfSpokes) * i;
+            multRotationZ(angle);
 
-                // Position and scale each spoke from the center to the rim
-                multTranslation([rimRadius / 2, 0, 0]);
-                multScale([rimRadius, spokeRadius, spokeRadius]);
+            // Position and scale each spoke from the center to the rim
+            multTranslation([rimRadius / 2, 0, 0]);
+            multScale([rimRadius, spokeRadius, spokeRadius]);
 
-                updateModelView();
-                CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
+            updateModelView();
+            CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
 
-                pushMatrix();
-                    gl.uniform4fv(u_color, outlineColor);
-                    CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-                popMatrix();
-
+            pushMatrix();
+                gl.uniform4fv(u_color, outlineColor);
+                CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
             popMatrix();
-        } 
-    popMatrix(); 
+
+        popMatrix();
+    }   
     //----------Rim----------//
 }
 
@@ -148,18 +146,20 @@ function chassis() {
 
 //Base for the upper part of the truck
 function truckBase() {
-    let color = vec4(1.0, 0.0, 0.0, 1);
-    gl.uniform4fv(u_color, color);
-
-    multTranslation([0.0, 1.5, 0.0]);
-    multScale([10.0, 0.5, 4.5]);
-
-    updateModelView();
-    CUBE.draw(gl, program, mode);
-
     pushMatrix();
-        gl.uniform4fv(u_color, outlineColor);
-        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        let color = vec4(1.0, 0.0, 0.0, 1);
+        gl.uniform4fv(u_color, color);
+
+        multTranslation([0.0, 1.5, 0.0]);
+        multScale([10.0, 0.5, 4.5]);
+
+        updateModelView();
+        CUBE.draw(gl, program, mode);
+
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     popMatrix();
 }
 
@@ -315,8 +315,11 @@ function cabin() {
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
 
+        const sizeX = stepWidth*1.4;
+        const sizeZ = stepWidth*2.6;
+
         multTranslation([-3.7, 3.0, 0.0]);
-        multScale([2.25, 3.00, 4.0]);
+        multScale([sizeX, 3.00, sizeZ]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -333,8 +336,8 @@ function cabin() {
         let windowColor = vec4(0.6, 0.6, 0.9, 1.0);
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-4.8, 3.5, 0.0]);
-        multScale([0.25, 1.5, 3.5]);
+        multTranslation([-stepWidth*0.75-3.6, 3.5, 0.0]);
+        multScale([0.25, 1.5, stepWidth*2.2]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -344,9 +347,9 @@ function cabin() {
 
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-3.9, 3.5, 2.0]);
+        multTranslation([-stepWidth*0.2-3.6, 3.5, -stepWidth*1.25]);
         multRotationY(90);
-        multScale([0.25, 1.5, 1.25]);
+        multScale([0.25, 1.5, stepWidth*0.9]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -357,9 +360,9 @@ function cabin() {
 
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-3.9, 3.5, -2.0]);
+        multTranslation([-stepWidth*0.2-3.6, 3.5, stepWidth*1.25]);
         multRotationY(90);
-        multScale([0.25, 1.5, 1.25]);
+        multScale([0.25, 1.5, stepWidth*0.9]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -371,7 +374,7 @@ function cabin() {
         let blinkerColor = vec4(1.0, 1.0, 0.0, 1.0);
         gl.uniform4fv(u_color, blinkerColor);
 
-        multTranslation([-4.75, 2.25, 1.5]);
+        multTranslation([-stepWidth*0.75-3.6, 2.25, stepWidth*0.8]);
         multRotationZ(90);
         multScale([0.5, 0.25, 0.5]);
 
@@ -384,7 +387,7 @@ function cabin() {
 
         gl.uniform4fv(u_color, blinkerColor);
 
-        multTranslation([-4.75, 2.25, -1.5]);
+        multTranslation([-stepWidth*0.75-3.6, 2.25, -stepWidth*0.8]);
         multRotationZ(90);
         multScale([0.5, 0.25, 0.5]);
 
@@ -463,7 +466,7 @@ function waterTank() {
         gl.uniform4fv(u_color, color);
 
         multTranslation([1.25, 3.0, 0.0]);
-        multScale([7.0, 2.5, 4.0]);
+        multScale([stepWidth*4.4, 2.5, stepWidth*2.5]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -480,11 +483,12 @@ function waterTank() {
 function stairBaseRotation() {
     //Shorten cylinder on top of the waterTank (rotates)
     pushMatrix();
+        const width = stepWidth*1.5;
 
         let color = vec4(1.0, 0.45, 0.0, 1);
         gl.uniform4fv(u_color, color);
 
-        multScale([2.2, 0.7, 2.2]);
+        multScale([width, 0.5, width]);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
@@ -501,36 +505,43 @@ function stairBaseRotation() {
 function stairBaseElevation() {
     //Cube stays in place
     //lower and upper stairs elevate
-    let color = vec4(0.3, 0.3, 0.3, 1);
-    gl.uniform4fv(u_color, color);
-    
-    multScale([1.3,0.9,1.3]);
-
-    updateModelView();
-    //CUBE.draw(gl, program, mode);
-
     pushMatrix();
-        gl.uniform4fv(u_color, outlineColor);
-        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        const width = stepWidth;
+
+        let color = vec4(0.3, 0.3, 0.3, 1);
+        gl.uniform4fv(u_color, color);
+        
+        multScale([width,1,width]);
+
+        updateModelView();
+        CUBE.draw(gl, program, mode);
+
+        pushMatrix();
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+        popMatrix();
     popMatrix();
 }
 
 function stair() {
     
-    const stairWidth = STAIR_WIDTH;
-    const stairDepth = stairWidth;
-    const count = stepNr; // Number of steps on the lower stair (1st nr = nr of steps, 2nd nr = when 1st step starts)
-    const stepHeight = 0.2;
+
+    const stairDepth = STAIRWIDTH;
+    const stepCount = stepNr; // Number of steps on the lower stair (+2 is when 1st step starts)
+    const stepHeight = STAIRWIDTH;
     const stepDepth = stairDepth-0.04;
-    const stepDistance = 0.4;
+    const stepDistance = STAIRWIDTH*2;
     const stepSpace = stepHeight + stepDistance; // Space needed for each step
-    const gap = stepSpace*2;
-    const stairHeight = stepNr * stepSpace + gap;
+    const gap = stepWidth*1;
+    const stairHeight = stepCount * stepSpace + gap;
+    const compensationTrans = stepSpace*stepCount/2; // Adjusts stair position when stepCount changes
+    const minDistance = stepSpace -1 ; // Base stair position
 
     pushMatrix();
-
+//compensationTrans/2-minDistance
         multRotationY(90);
         multRotationX(-90);
+        multTranslation([0,compensationTrans,0]);
 
         // Left side
         pushMatrix();
@@ -538,8 +549,8 @@ function stair() {
             let color = vec4(0.3, 0.3, 0.3, 1);
             gl.uniform4fv(u_color, color);
 
-            multTranslation([stepWidth/2*-1, 0, 0]);
-            multScale([stairWidth, stairHeight, stairDepth]);
+            multTranslation([(stepWidth+STAIRWIDTH)/2*-1, 0, 0]);
+            multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -555,8 +566,8 @@ function stair() {
         // Right side
         pushMatrix();
 
-            multTranslation([stepWidth/2, 0, 0]);
-            multScale([stairWidth, stairHeight, stairDepth]);
+            multTranslation([(stepWidth+STAIRWIDTH)/2, 0, 0]);
+            multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -570,7 +581,7 @@ function stair() {
         popMatrix();
 
         // Steps
-        for (let i = 0; i < count; i++) { // i=2 creates space for connection with stairBaseElevation
+        for (let i = 0; i < stepCount; i++) { // i=2 creates space for connection with stairBaseElevation
             pushMatrix();
 
                 multTranslation([0, i * stepSpace - stairHeight/2 +gap, 0]); // stairHeight/2 centers steps
@@ -595,7 +606,7 @@ function stair() {
 function lowerStair() {
     //Stair that stays in place
     pushMatrix();
-        multTranslation([-0.7,-0.6,0]);
+        multTranslation([1.7,-0.6,0]);
         stair();
     popMatrix();
 }
@@ -603,7 +614,7 @@ function lowerStair() {
 function upperStair() {
     //Stair that extends
     pushMatrix();
-        multTranslation([-0.78,-0.42,0]);
+        multTranslation([1.6,-0.4,0]);
         stair();
     popMatrix();
 }
@@ -1084,10 +1095,14 @@ function firehose() {
 
 //Assemble all decals on the truck
 function decal() {
+    //Math.min(stepWidth*0.2+1,stepWidth*0.2)
+    const size = Math.min(stepWidth*0.6,1);
+
     pushMatrix();
 
-        multTranslation([1.4, 3,2]);
+        multTranslation([1.35, 3,stepWidth*1.25]);
         multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
+        multScale([size,size,1]);
 
         pushMatrix();
             multTranslation([-0.1,0,0]);
@@ -1107,8 +1122,9 @@ function decal() {
 
     pushMatrix();
 
-        multTranslation([1.2, 3 ,-2]);
+        multTranslation([1.3, 3 ,stepWidth*-1.25]);
         multScale([-1,1,1]);
+        multScale([size,size,1]);
 
         pushMatrix();
             multTranslation([-2.2, 0,0]);
@@ -1126,9 +1142,6 @@ function decal() {
 
     popMatrix();
 
-    pushMatrix();
-        multTranslation([4.9,3,0]);
-        firehose();
-    popMatrix();
+
 
 }

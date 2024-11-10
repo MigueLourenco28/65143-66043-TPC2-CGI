@@ -6,10 +6,10 @@ import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
-import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
+import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
 import { entrance, floor, poles } from './scenery.js';
 
-export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, updateModelView, gl, STAIR_WIDTH, stepNr, stepWidth};
+export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, updateModelView, gl };
 
 let u_color;
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
@@ -52,11 +52,12 @@ let speed = 1 / 60.0;   // Speed (how many days added to time on each render pas
 
 const WHEELRADIUS = 1;
 
+const MAX_SIZE = 1.6;
+const DEFAULTSTEPNR = 8;
+let stepWidth = MAX_SIZE; // Width of all ladders' steps
+let stepNr = DEFAULTSTEPNR;
+const STAIRWIDTH = 0.2;
 
-const STAIR_WIDTH = 0.2;
-const DEFAULT_STEPNR = 8;
-let stepNr = DEFAULT_STEPNR;
-let stepWidth = 1.6;
 
 
 
@@ -184,10 +185,11 @@ function main(shaders) {
                     stepNr -= 1;
                 break;
             case ',':
-                stepWidth += 0.1;
+                if (stepWidth < MAX_SIZE)
+                    stepWidth += 0.1;
                 break;
             case '.':
-                if (stepWidth > STAIR_WIDTH*4)
+                if (stepWidth > STAIRWIDTH*3)
                 stepWidth -= 0.1;
                 break;
         }
@@ -263,7 +265,6 @@ function draw_scene(view) {
         chassis();
         // Truck Base
         pushMatrix();
-            multTranslation([0.0, 0.0, 0.0]);
             truckBase();
         popMatrix();
         pushMatrix();
@@ -281,18 +282,24 @@ function draw_scene(view) {
         pushMatrix();
             decal();
         popMatrix();
+        // Fire Hose
+        pushMatrix();
+            const sizeFH = Math.min(stepWidth*1,1);
+            multTranslation([STAIRWIDTH*7+stepWidth*2.2,3,0]);
+            multScale([sizeFH,sizeFH,sizeFH]);
+            firehose();
+        popMatrix();
         // Stairs      
         pushMatrix();         
-            multTranslation([3.2,4.4,0.0]);
+            multTranslation([stepWidth*1.5,4.5,0.0]);
             multRotationY(stairBaseAngle);
             stairBaseRotation();
             pushMatrix();
-                multTranslation([0.0,0.8,0.0]);
+                multTranslation([0.0,0.7,0.0]);
                 stairBaseElevation();
                 multRotationZ(-ladderInclination);
                 pushMatrix();
                     multTranslation([-2.0,0.5,0.0]);
-                    multScale([1.0, 1.0, 0.75]);
                     lowerStair();  
                     multTranslation([-upperLadderPos, 0.0, 0.0]);                     
                     upperStair();
@@ -300,6 +307,7 @@ function draw_scene(view) {
             popMatrix(); 
         popMatrix();
     popMatrix();
+    //---------Fire Truck---------//
 }
 
 function draw_views() {
