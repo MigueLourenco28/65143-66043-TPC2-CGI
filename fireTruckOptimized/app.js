@@ -38,7 +38,10 @@ let front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
 let top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
 let left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
 let axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
-let big_view = axo_view;
+let big_view = front_view;
+
+let isAxo = false;
+
 
 let projection = mat4();
 
@@ -50,8 +53,6 @@ let speed = 1 / 60.0;   // Speed (how many days added to time on each render pas
 
 const WHEELRADIUS = 1;
 
-
-
 /** @type{WebGL2RenderingContext} */
 let gl;
 
@@ -60,6 +61,16 @@ let program;
 
 /** @type{HTMLCanvasElement} */
 let canvas;
+
+
+function refreshAxoView() {
+    coordX = 5 * Math.cos(theta) * Math.cos(gamma);
+    coordY = 5 * Math.sin(gamma);
+    coordZ = 5 * Math.sin(theta) * Math.cos(gamma);
+    axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
+
+}
+
 
 function main(shaders) {
     canvas = document.getElementById("gl-canvas");
@@ -130,36 +141,36 @@ function main(shaders) {
                 gamma = 9;
                 break;
             case '4':
-                big_view = axo_view;
+                isAxo = true;
                 break;
             case '3':
+                isAxo = false;
                 big_view = top_view;
                 break;
             case '2':
+                isAxo = false;
                 big_view = left_view;
                 break;
             case '1':
+                isAxo=false;
                 big_view = front_view;
                 break;
             case '0': toggle_view_mode();
                 break;
             case 'ArrowLeft':
-                if (theta <19)
                     theta += 0.05;
                 break;
             case 'ArrowRight':
-                if (theta >-21)
                     theta -= 0.05;
                 break;
             case 'ArrowUp':
-                if (gamma <19)
                     gamma -= 0.05;
                 break;
             case 'ArrowDown':
-                if (gamma >-21)
                     gamma += 0.05;
                 break;
         }
+        
     });
     
     window.addEventListener('resize', resize);
@@ -293,13 +304,21 @@ function draw_views() {
     }
     else {
         gl.viewport(0, 0, canvas.width, canvas.height);
-        draw_scene(big_view);
+        if(isAxo) {
+            draw_scene(axo_view);
+        }
+        else {
+            draw_scene(big_view);
+        }
+        
     }
 }
 
 function render() {
     if (animation) time += speed;
     window.requestAnimationFrame(render);
+
+    refreshAxoView();
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     draw_views();
