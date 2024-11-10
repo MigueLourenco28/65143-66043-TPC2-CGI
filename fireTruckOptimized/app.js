@@ -9,7 +9,7 @@ import * as TORUS from '../../libs/objects/torus.js';
 import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
 import { entrance, floor, poles } from './scenery.js';
 
-export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, updateModelView, gl };
+export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, updateModelView, gl, STAIR_WIDTH, stepNr, stepWidth};
 
 let u_color;
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
@@ -42,7 +42,6 @@ let big_view = axo_view;
 
 let isAxo = true;
 
-
 let projection = mat4();
 
 let zoom = 10;
@@ -52,6 +51,14 @@ let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 
 const WHEELRADIUS = 1;
+
+
+const STAIR_WIDTH = 0.2;
+const DEFAULT_STEPNR = 8;
+let stepNr = DEFAULT_STEPNR;
+let stepWidth = 1.6;
+
+
 
 /** @type{WebGL2RenderingContext} */
 let gl;
@@ -158,16 +165,30 @@ function main(shaders) {
             case '0': toggle_view_mode();
                 break;
             case 'ArrowLeft':
-                    theta += 0.05;
+                theta += 0.05;
                 break;
             case 'ArrowRight':
-                    theta -= 0.05;
+                theta -= 0.05;
                 break;
             case 'ArrowUp':
-                    gamma -= 0.05;
+                gamma -= 0.05;
                 break;
             case 'ArrowDown':
-                    gamma += 0.05;
+                gamma += 0.05;
+                break;
+            case 'l':
+                stepNr += 1;
+                break;
+            case 'ç':
+                if (stepNr > 1)
+                    stepNr -= 1;
+                break;
+            case ',':
+                stepWidth += 0.1;
+                break;
+            case '.':
+                if (stepWidth > STAIR_WIDTH*4)
+                stepWidth -= 0.1;
                 break;
         }
         

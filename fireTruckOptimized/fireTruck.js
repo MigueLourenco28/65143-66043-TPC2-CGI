@@ -3,7 +3,7 @@ import { multRotationY, multScale, multTranslation, pushMatrix, popMatrix, multR
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
-import { outlineColor, program, u_color, mode, updateModelView, wheelAngle, gl } from "./app.js";
+import { outlineColor, program, u_color, mode, updateModelView, wheelAngle, gl, STAIR_WIDTH, stepNr, stepWidth} from "./app.js";
 
 export { wheel, wheelConnector, chassis, truckBase, bumpers, cabin, waterTank, stairBaseRotation, stairBaseElevation, lowerStair, upperStair, decalC, decalG, decalI, decalT, decalP, decal2, decal, firehose };
 
@@ -26,35 +26,37 @@ function wheel() {
     popMatrix();
     //----------Tire----------//
     //----------Rim----------//
-    const numberOfSpokes = 20; // Increased density for spokes
-    const spokeRadius = 0.03;
-    const rimRadius = 0.5; // Slightly smaller than the tire radius
+    pushMatrix();
+        const numberOfSpokes = 20; // Increased density for spokes
+        const spokeRadius = 0.03;
+        const rimRadius = 0.5; // Slightly smaller than the tire radius
 
-    multRotationX(90);
+        multRotationX(90);
 
-    for (let i = 0; i < numberOfSpokes; i++) {
-        pushMatrix();        
-            // Set color for the rim and spokes
-            gl.uniform4fv(u_color, rimColor); // Gray color for the rim
+        for (let i = 0; i < numberOfSpokes; i++) {
+            pushMatrix();        
+                // Set color for the rim and spokes
+                gl.uniform4fv(u_color, rimColor); // Gray color for the rim
 
-            // Rotate each spoke around the wheel center
-            const angle = (360 / numberOfSpokes) * i;
-            multRotationZ(angle);
+                // Rotate each spoke around the wheel center
+                const angle = (360 / numberOfSpokes) * i;
+                multRotationZ(angle);
 
-            // Position and scale each spoke from the center to the rim
-            multTranslation([rimRadius / 2, 0, 0]);
-            multScale([rimRadius, spokeRadius, spokeRadius]);
+                // Position and scale each spoke from the center to the rim
+                multTranslation([rimRadius / 2, 0, 0]);
+                multScale([rimRadius, spokeRadius, spokeRadius]);
 
-            updateModelView();
-            CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
+                updateModelView();
+                CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
 
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                pushMatrix();
+                    gl.uniform4fv(u_color, outlineColor);
+                    CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+                popMatrix();
+
             popMatrix();
-
-        popMatrix();
-    }   
+        } 
+    popMatrix(); 
     //----------Rim----------//
 }
 
@@ -505,7 +507,7 @@ function stairBaseElevation() {
     multScale([1.3,0.9,1.3]);
 
     updateModelView();
-    CUBE.draw(gl, program, mode);
+    //CUBE.draw(gl, program, mode);
 
     pushMatrix();
         gl.uniform4fv(u_color, outlineColor);
@@ -515,15 +517,15 @@ function stairBaseElevation() {
 
 function stair() {
     
-    const stairWidth = 0.16;
+    const stairWidth = STAIR_WIDTH;
     const stairDepth = stairWidth;
-    const stepNr = 8 + 2; // Number of steps on the lower stair (1st nr = nr of steps, 2nd nr = when 1st step starts)
+    const count = stepNr; // Number of steps on the lower stair (1st nr = nr of steps, 2nd nr = when 1st step starts)
     const stepHeight = 0.2;
-    const stepWidth = 1.5;
     const stepDepth = stairDepth-0.04;
     const stepDistance = 0.4;
     const stepSpace = stepHeight + stepDistance; // Space needed for each step
-    const stairHeight = stepNr * stepSpace;
+    const gap = stepSpace*2;
+    const stairHeight = stepNr * stepSpace + gap;
 
     pushMatrix();
 
@@ -568,10 +570,10 @@ function stair() {
         popMatrix();
 
         // Steps
-        for (let i = 2; i < stepNr; i++) { // i=2 creates space for connection with stairBaseElevation
+        for (let i = 0; i < count; i++) { // i=2 creates space for connection with stairBaseElevation
             pushMatrix();
 
-                multTranslation([0, i * stepSpace - stairHeight/2 , 0]); // stairHeight/2 centers steps
+                multTranslation([0, i * stepSpace - stairHeight/2 +gap, 0]); // stairHeight/2 centers steps
                 multScale([stepWidth, stepHeight, stepDepth]);
 
                 updateModelView();
