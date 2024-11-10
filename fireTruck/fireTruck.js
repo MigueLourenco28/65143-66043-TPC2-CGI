@@ -463,7 +463,7 @@ function waterTank() {
         gl.uniform4fv(u_color, color);
 
         multTranslation([1.25, 3.0, 0.0]);
-        multScale([7.0, 2.5, 4.0]);
+        multScale([stepWidth*4.4, 2.5, stepWidth*2.5]);
 
         uploadModelView();
         CUBE.draw(gl, program, mode);
@@ -1093,9 +1093,11 @@ function firehose() {
 //Assemble all decals on the truck
 function decal() {
     pushMatrix();
+        const size = Math.min(STAIRWIDTH*1.2 + stepWidth*0.2,1);
 
-        multTranslation([1.4, 3,2]);
+        multTranslation([1.35, 3,stepWidth*1.25]);
         multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
+        multScale([size,size,1]);
 
         pushMatrix();
             multTranslation([-0.1,0,0]);
@@ -1115,7 +1117,7 @@ function decal() {
 
     pushMatrix();
 
-        multTranslation([1.2, 3 ,-2]);
+        multTranslation([1.2, 3 ,stepWidth*-1.25]);
         multScale([-1,1,1]);
 
         pushMatrix();
@@ -1135,7 +1137,7 @@ function decal() {
     popMatrix();
 
     pushMatrix();
-        multTranslation([4.9,3,0]);
+        multTranslation([STAIRWIDTH*7+stepWidth*2.2,3,0]);
         firehose();
     popMatrix();
 
