@@ -27,15 +27,25 @@ let ladderInclination = 0; // Angle of the ladder in the z axis
 
 let all_views = false;
 
-let big_view, front_view, left_view, top_view, axo_view;
+let theta = 10; // Horizontal camera angle of the axonometric projection
+let gamma = 9; // Vertical camera angle of the axonometric projection
+
+let coordX = 5 * Math.cos(theta) * Math.cos(gamma);
+let coordY = 5 * Math.sin(gamma);
+let coordZ = 5 * Math.sin(theta) * Math.cos(gamma);
+
+let front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
+let top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
+let left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
+let axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
+let big_view = axo_view;
 
 let projection = mat4();
 
 let zoom = 10;
 let aspect = 1.0;
 
-let theta = 10; // Horizontal camera angle of the axonometric projection
-let gamma = 9; // Vertical camera angle of the axonometric projection
+
 
 let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
@@ -288,16 +298,6 @@ function draw_views() {
 function render() {
     if (animation) time += speed;
     window.requestAnimationFrame(render);
-
-    let eyeX = 5 * Math.cos(theta) * Math.cos(gamma);
-    let eyeY = 5 * Math.sin(gamma);
-    let eyeZ = 5 * Math.sin(theta) * Math.cos(gamma);
-
-    front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
-    top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
-    left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
-    axo_view = lookAt([eyeX, eyeY, eyeZ], [0, 0, 0], [0, 1, 0]);
-    big_view = axo_view;
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     draw_views();
