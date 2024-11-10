@@ -174,16 +174,16 @@ function clock() {
         const secondAngle = (seconds / 60) * 2 * Math.PI;
         const minuteAngle = (minutes / 60) * 2 * Math.PI + (secondAngle / 60);
         const hourAngle = (hours / 12) * 2 * Math.PI + (minuteAngle / 12);
-        //console.log(secondAngle);
 
         //Clock hands
         //Hour hand
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
+            multTranslation([Math.cos(hourAngle)*2,0,Math.sin(hourAngle)*-2]);
 
-            multRotationY(hourAngle);
-            multScale([7.0, 1.0, 2.0]);
+            multRotationY(hourAngle/Math.PI*180);
+            multScale([4.0, 1.0, 1.0]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -194,9 +194,11 @@ function clock() {
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
+            multTranslation([Math.cos(minuteAngle)*3,0,Math.sin(minuteAngle)*-3]);
 
-            multRotationY(minuteAngle);
-            multScale([10.0, 1.0, 1]);
+            multRotationY(minuteAngle/Math.PI*180);
+            multScale([6.0, 1.0, 0.75]);
+
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -208,9 +210,10 @@ function clock() {
 
             gl.uniform4fv(u_color, clockBorderColor);
 
-            multRotationY(secondAngle);
-            console.log(secondAngle);  ////DELETE
-            multScale([16, 1.0, 0.5]);
+            multTranslation([Math.cos(secondAngle)*4,0,Math.sin(secondAngle)*-4]);
+            multRotationY(secondAngle/Math.PI*180);
+            multScale([8, 1.0, 0.5]);
+
 
             updateModelView();
             CUBE.draw(gl, program, mode);
