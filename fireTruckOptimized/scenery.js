@@ -133,7 +133,7 @@ function clock() {
 
         multTranslation([0.0, 6.0, 8.0]);
         multRotationZ(90);
-        multScale([2.2, 0.7, 2.2]);
+        multScale([2.2, 0.35, 2.2]);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
@@ -147,7 +147,7 @@ function clock() {
 
         multTranslation([0.01, 6.0, 8.0]);
         multRotationZ(90);
-        multScale([1.75, 0.7, 1.75]);
+        multScale([1.75, 0.35, 1.75]);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
@@ -160,7 +160,7 @@ function clock() {
 
         multTranslation([0.02, 6.0, 8.0]);
         multRotationZ(90);
-        multScale([0.1, 0.7, 0.1]);
+        multScale([0.1, 0.35, 0.1]);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
@@ -183,7 +183,7 @@ function clock() {
             multTranslation([Math.cos(hourAngle)*2,0,Math.sin(hourAngle)*-2]);
 
             multRotationY(hourAngle/Math.PI*180);
-            multScale([4.0, 1.0, 1.0]);
+            multScale([4.0, 0.35, 1.0]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -197,7 +197,7 @@ function clock() {
             multTranslation([Math.cos(minuteAngle)*3,0,Math.sin(minuteAngle)*-3]);
 
             multRotationY(minuteAngle/Math.PI*180);
-            multScale([6.0, 1.0, 0.75]);
+            multScale([6.0, 0.35, 0.75]);
 
 
             updateModelView();
@@ -212,7 +212,7 @@ function clock() {
 
             multTranslation([Math.cos(secondAngle)*4,0,Math.sin(secondAngle)*-4]);
             multRotationY(secondAngle/Math.PI*180);
-            multScale([8, 1.0, 0.5]);
+            multScale([8, 0.35, 0.5]);
 
 
             updateModelView();

@@ -50,8 +50,6 @@ let aspect = 1.0;
 let time = 0;           // Global simulation time in days
 let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
 
-const WHEELRADIUS = 1;
-
 const MAX_SIZE = 1.6;
 const DEFAULTSTEPNR = 8;
 let stepWidth = MAX_SIZE; // Width of all ladders' steps
@@ -107,12 +105,12 @@ function main(shaders) {
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;
-                    wheelAngle += truckPos*WHEELRADIUS;
+                    wheelAngle += 2.0;
                 break;
             case 'd':
                 if (truckPos < 8.0)
                     truckPos += 0.1;
-                    wheelAngle -= truckPos*WHEELRADIUS;
+                    wheelAngle -= 2.0;
                 break;
             case 'q':
                 stairBaseAngle += 1;
@@ -263,9 +261,6 @@ function draw_scene(view) {
     //Entrance
     pushMatrix();
         entrance();
-    popMatrix();
-    pushMatrix();
-        clock();
     popMatrix();
     //---------Scenery---------//
     //---------Fire Truck---------//
