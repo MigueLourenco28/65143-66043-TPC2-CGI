@@ -38,7 +38,7 @@ let front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
 let top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
 let left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
 let axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
-let big_view = front_view;
+let big_view = axo_view;
 
 let isAxo = false;
 
