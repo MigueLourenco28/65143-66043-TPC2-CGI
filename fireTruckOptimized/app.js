@@ -97,6 +97,13 @@ function main(shaders) {
     window.addEventListener('keydown', function (event) {
         let input = event.key;
         switch (input) {
+            case 'h':
+                const textOverlay = document.getElementById('text-overlay');
+                if (textOverlay.style.display === 'none') {
+                    textOverlay.style.display = 'block';
+                } else { textOverlay.style.display = 'none';}
+                break;
+
             case 'a':
                 if(truckPos > -10.5)
                     truckPos -= 0.1;

@@ -166,13 +166,20 @@ function clock() {
         CYLINDER.draw(gl, program, mode);
 
         //Clock hands
+
+        const now = new Date();
+        const seconds = now.getSeconds();
+        const minutes = now.getMinutes();
+        const hours = now.getHours();
+
+
         //Hour hand
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
 
-            multRotationY(360 * time / 20);
-            multScale([2.0, 1.0, 2.0]);
+            multRotationY(seconds/60*2*Math.PI);
+            multScale([15.0, 1.0, 1.0]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
