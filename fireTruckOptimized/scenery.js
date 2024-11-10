@@ -165,33 +165,52 @@ function clock() {
         updateModelView();
         CYLINDER.draw(gl, program, mode);
 
-        //Clock hands
-
         const now = new Date();
         const seconds = now.getSeconds();
         const minutes = now.getMinutes();
         const hours = now.getHours();
 
+        // Calculate angles for hands
+        const secondAngle = (seconds / 60) * 2 * Math.PI;
+        const minuteAngle = (minutes / 60) * 2 * Math.PI + (secondAngle / 60);
+        const hourAngle = (hours / 12) * 2 * Math.PI + (minuteAngle / 12);
+        //console.log(secondAngle);
 
+        //Clock hands
         //Hour hand
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
 
-            multRotationY(seconds/60*2*Math.PI);
-            multScale([15.0, 1.0, 1.0]);
+            multRotationY(hourAngle);
+            multScale([7.0, 1.0, 2.0]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);
 
         popMatrix();
+
         //Minute hand
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
 
-            multRotationY(360 * time / 20);
-            multScale([2.0, 1.0, 5.0]);
+            multRotationY(minuteAngle);
+            multScale([10.0, 1.0, 1]);
+
+            updateModelView();
+            CUBE.draw(gl, program, mode);
+
+        popMatrix();
+
+        //Seconds hand
+        pushMatrix();
+
+            gl.uniform4fv(u_color, clockBorderColor);
+
+            multRotationY(secondAngle);
+            console.log(secondAngle);  ////DELETE
+            multScale([16, 1.0, 0.5]);
 
             updateModelView();
             CUBE.draw(gl, program, mode);

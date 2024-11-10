@@ -356,7 +356,7 @@ function draw_views() {
 }
 
 function render() {
-    if (animation) time += speed;
+    
     window.requestAnimationFrame(render);
 
     refreshAxoView();
