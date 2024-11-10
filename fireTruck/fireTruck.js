@@ -1092,8 +1092,9 @@ function firehose() {
 
 //Assemble all decals on the truck
 function decal() {
+    const size = Math.min(STAIRWIDTH*1.2 + stepWidth*0.2,1);
+
     pushMatrix();
-        const size = Math.min(STAIRWIDTH*1.2 + stepWidth*0.2,1);
 
         multTranslation([1.35, 3,stepWidth*1.25]);
         multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
@@ -1117,8 +1118,9 @@ function decal() {
 
     pushMatrix();
 
-        multTranslation([1.2, 3 ,stepWidth*-1.25]);
+        multTranslation([1.3, 3 ,stepWidth*-1.25]);
         multScale([-1,1,1]);
+        multScale([size,size,1]);
 
         pushMatrix();
             multTranslation([-2.2, 0,0]);
@@ -1136,9 +1138,6 @@ function decal() {
 
     popMatrix();
 
-    pushMatrix();
-        multTranslation([STAIRWIDTH*7+stepWidth*2.2,3,0]);
-        firehose();
-    popMatrix();
+
 
 }

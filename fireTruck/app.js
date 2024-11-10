@@ -5,7 +5,7 @@ import { modelView, loadMatrix, multRotationY, multScale, multTranslation, pushM
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
-import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase } from './fireTruck.js';
+import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
 import { entrance, floor, poles } from './scenery.js';
 
 export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, uploadModelView, gl };
@@ -278,6 +278,13 @@ function render() {
         // Decals
         pushMatrix();
             decal();
+        popMatrix();
+        // Fire Hose
+        pushMatrix();
+            const sizeFH = Math.min(stepWidth*1,1);
+            multTranslation([STAIRWIDTH*7+stepWidth*2.2,3,0]);
+            multScale([sizeFH,sizeFH,sizeFH]);
+            firehose();
         popMatrix();
         // Stairs      
         pushMatrix();         
