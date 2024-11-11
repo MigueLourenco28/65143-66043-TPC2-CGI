@@ -283,7 +283,7 @@ function draw_scene(view) {
         
         // Wheels and wheel connectors
         pushMatrix();
-        chassis();
+            chassis();
         popMatrix();
 
         // Truck Base
