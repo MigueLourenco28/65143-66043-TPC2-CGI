@@ -44,7 +44,7 @@ let isAxo = true;
 
 let projection = mat4();
 
-let zoom = 10;
+let zoom = 12;
 let aspect = 1.0;
 
 let time = 0;           // Global simulation time in days
