@@ -16,7 +16,7 @@ import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
-import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
+import { chassis, cabin, waterTank, decal, stair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
 import { entrance, floor, poles } from './scenery.js';
 
 export { outlineColor, program, u_color, mode, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, updateModelView, gl };
@@ -260,7 +260,6 @@ function draw_scene(view) {
 
     loadMatrix(view);
 
-    // Scene graph traversal code goes here...
     //---------Scenery---------//
     //Floor
     pushMatrix();
@@ -275,62 +274,75 @@ function draw_scene(view) {
         entrance();
     popMatrix();
     //---------Scenery---------//
+
     //---------Fire Truck---------//
+    multTranslation([1.0 + truckPos, 0.0, 1.0]);
     pushMatrix();
-        multTranslation([1.0 + truckPos, 0.0, 1.0]);
+        multScale([stepWidth / 1.5, 1.0, stepWidth / 1.6]);
+        multTranslation([-3.0 * (stepWidth - MIN_STEP_WIDTH) + stepWidth + 1.4, 0.0, 0.0]);
+        
+        // Wheels and wheel connectors
         pushMatrix();
-            multScale([stepWidth / 1.5, 1.0, stepWidth / 1.6]);
-            multTranslation([-3.0 * (stepWidth - MIN_STEP_WIDTH) + stepWidth + 1.4, 0.0, 0.0]);
-            // Wheels and wheel connectors
-            pushMatrix();
-            chassis();
-            popMatrix();
-            // Truck Base
-            pushMatrix();
-                truckBase();
-            popMatrix();
-            pushMatrix();
-                bumpers();
-            popMatrix();
+        chassis();
         popMatrix();
-        // Cabin
+
+        // Truck Base
         pushMatrix();
-            multTranslation([-stepWidth * 2.922 + 4.8, 0.0, 0.0]);
-            cabin();
+            truckBase();
         popMatrix();
-        // Water tank
-        pushMatrix();
-            waterTank();
-        popMatrix();
-        // Decals
-        pushMatrix();
-            decal();
-        popMatrix();
-        // Fire Hose
-        pushMatrix();
-            const sizeFH = Math.min(stepWidth * 1.0, 1.0);
-            multTranslation([STAIRWIDTH * 7 + stepWidth * 2.2, 3.0, 0.0]);
-            multScale([sizeFH,sizeFH,sizeFH]);
-            firehose();
-        popMatrix();
-        // Stairs      
-        pushMatrix();         
-            multTranslation([stepWidth * 1.5, 4.5, 0.0]);
-            multRotationY(stairBaseAngle);
-            stairBaseRotation();
-            pushMatrix();
-                multTranslation([0.0, 0.7, 0.0]);
-                stairBaseElevation();
-                multRotationZ(-ladderInclination);
-                pushMatrix();
-                    multTranslation([-2.0, 0.5, 0.0]);
-                    lowerStair();  
-                    multTranslation([-upperLadderPos, 0.0, 0.0]);                     
-                    upperStair();
-                popMatrix();
-            popMatrix(); 
-        popMatrix();
+        
+        bumpers();
     popMatrix();
+
+    // Cabin
+    pushMatrix();
+        multTranslation([-stepWidth * 2.922 + 4.8, 0.0, 0.0]);
+        cabin();
+    popMatrix();
+
+    // Water tank
+    pushMatrix();
+        waterTank();
+    popMatrix();
+
+    // Decals
+    pushMatrix();
+        decal();
+    popMatrix();
+
+    // Fire Hose
+    pushMatrix();
+        const sizeFH = Math.min(stepWidth * 1.0, 1.0);
+        multTranslation([STAIRWIDTH * 7 + stepWidth * 2.2, 3.0, 0.0]);
+        multScale([sizeFH,sizeFH,sizeFH]);
+        firehose();
+    popMatrix();
+
+    // Stairs      
+    multTranslation([stepWidth * 1.5, 4.5, 0.0]);
+    multRotationY(stairBaseAngle);
+
+    pushMatrix();
+        stairBaseRotation();
+    popMatrix();
+
+    multTranslation([0.0, 0.7, 0.0]);
+
+    pushMatrix();
+        stairBaseElevation();
+    popMatrix();
+
+    multRotationZ(-ladderInclination);
+    multTranslation([-0.4, 0.0, 0.0]);
+
+    pushMatrix();
+        stair();
+    popMatrix();
+
+    multTranslation([-upperLadderPos, 0.0, 0.0]);
+    multTranslation([-stepWidth/8, +STAIRWIDTH, 0.0]);               
+    stair();
+
     //---------Fire Truck---------//
 }
 
