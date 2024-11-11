@@ -62,7 +62,8 @@ const MAX_STEP_WIDTH = STAIRWIDTH * 8.0; // Influences max truck size; Recommend
 const MIN_STEP_WIDTH = STAIRWIDTH * 3.0; // Influences min truck size; Recommended: 3
 let stepWidth = MAX_STEP_WIDTH; // Width of all ladders' steps
 const DEFAULT_STEP_NR = 8.0; // Starting number of steps
-let stepNr = DEFAULT_STEP_NR;
+let stepNr = DEFAULT_STEP_NR; // Number of steps in the stairs
+const sizeFH = Math.min(stepWidth * 1.0, 1.0); // Size of the fire hose
 
 
 /** @type{WebGL2RenderingContext} */
@@ -312,7 +313,6 @@ function draw_scene(view) {
 
     // Fire Hose
     pushMatrix();
-        const sizeFH = Math.min(stepWidth * 1.0, 1.0);
         multTranslation([STAIRWIDTH * 7 + stepWidth * 2.2, 3.0, 0.0]);
         multScale([sizeFH,sizeFH,sizeFH]);
         firehose();
@@ -340,7 +340,7 @@ function draw_scene(view) {
     popMatrix();
 
     multTranslation([-upperLadderPos, 0.0, 0.0]);
-    multTranslation([-stepWidth/8, +STAIRWIDTH, 0.0]);               
+    multTranslation([-stepWidth/8, STAIRWIDTH, 0.0]);               
     stair();
 
     //---------Fire Truck---------//
