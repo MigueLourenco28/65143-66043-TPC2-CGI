@@ -25,23 +25,24 @@ function wheel() {
     //Cylinder connecting two wheels
     //Spin on the x axis and sync with the translation (car movement)
     
-    //----------Tire----------//
-    pushMatrix();
-
-        let color = vec4(0.1, 0.1, 0.1, 1.0);
-        let rimColor = vec4(0.5, 0.5, 0.5, 1.0);
-        gl.uniform4fv(u_color, color);
-
-        updateModelView();
-        TORUS.draw(gl, program, mode);
-
-    popMatrix();
-    //----------Tire----------//
-    //----------Rim----------//
     const numberOfSpokes = 20; // Increased density for spokes
     const spokeRadius = 0.03;
     const rimRadius = 0.5; // Slightly smaller than the tire radius
 
+    let color = vec4(0.1, 0.1, 0.1, 1.0);
+    let rimColor = vec4(0.5, 0.5, 0.5, 1.0);
+
+    gl.uniform4fv(u_color, color);
+
+    //----------Tire----------//
+
+    updateModelView();
+    TORUS.draw(gl, program, mode);
+
+    //----------Tire----------//
+
+    //----------Rim----------//
+    
     multRotationX(90);
 
     for (let i = 0; i < numberOfSpokes; i++) {
@@ -60,37 +61,49 @@ function wheel() {
             updateModelView();
             CYLINDER.draw(gl, program, mode); // Draws each spoke as a thin cylinder
 
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
-
+            gl.uniform4fv(u_color, outlineColor);
+            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
         popMatrix();
     }   
     //----------Rim----------//
 }
 
+
 // Cylinders that connect each pair of wheels (front and back)
 function wheelConnector() {
-    pushMatrix();
 
         let color = vec4(0.5, 0.5, 0.5, 1.0);
+
         gl.uniform4fv(u_color, color);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
 
-        pushMatrix();
-            gl.uniform4fv(u_color, outlineColor);
-            CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-        popMatrix();
-
-    popMatrix();
+        gl.uniform4fv(u_color, outlineColor);
+        CYLINDER.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
 }
+
+
+function cover() {
+
+    let color = vec4(1.0, 0.0, 0.0, 1.0);
+
+    gl.uniform4fv(u_color, color);
+
+    updateModelView();
+    CUBE.draw(gl, program, mode);
+
+    gl.uniform4fv(u_color, outlineColor);
+    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+}
+
+
 
 //Contains the wheels, the wheels connectors and the a cover on top of them
 function chassis() {
     //Stretch cube on top of the wheel connectors
+
+
     //----------Wheels----------//
     pushMatrix();
         multTranslation([-3.0, 0.65, 2.0]);
@@ -136,23 +149,9 @@ function chassis() {
     popMatrix();
     //----------Wheel Connectors----------//
     //----------Chassis Cover----------//
-    pushMatrix();
-
-        let color = vec4(1.0, 0.0, 0.0, 1.0);
-        gl.uniform4fv(u_color, color);
-
-        multTranslation([0.0, 1.0, 0.0]);
-        multScale([10.0, 0.5, 3.5]);
-
-        updateModelView();
-        CUBE.draw(gl, program, mode);
-
-        pushMatrix();
-            gl.uniform4fv(u_color, outlineColor);
-            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-        popMatrix();
-
-    popMatrix();
+    multTranslation([0.0, 1.15, 0.0]);
+    multScale([9.5, 0.8, 3.4]);
+    cover();
     //----------Chassis Cover----------//
 }
 

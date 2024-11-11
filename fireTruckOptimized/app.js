@@ -31,37 +31,37 @@ let doorPos = 6.5; // Position of the door in the y axis
 let upperLadderPos = 0.0; // Position of the upper stairs
 
 const WHEELRADIUS = 0.75;
-let wheelAngle = 0; // Angle of a wheel in the z axis
-let stairBaseAngle = 0; // Angle of the stair base in the y axis
-let ladderInclination = 0; // Angle of the ladder in the z axis
+let wheelAngle = 0.0; // Angle of a wheel in the z axis
+let stairBaseAngle = 0.0; // Angle of the stair base in the y axis
+let ladderInclination = 0.0; // Angle of the ladder in the z axis
 
 let all_views = false;
 
-let theta = 10; // Horizontal camera angle of the axonometric projection
-let gamma = 9; // Vertical camera angle of the axonometric projection
+let theta = 10.0; // Horizontal camera angle of the axonometric projection
+let gamma = 9.0; // Vertical camera angle of the axonometric projection
 
-let coordX = 5 * Math.cos(theta) * Math.cos(gamma);
-let coordY = 5 * Math.sin(gamma);
-let coordZ = 5 * Math.sin(theta) * Math.cos(gamma);
+let coordX = 5.0 * Math.cos(theta) * Math.cos(gamma);
+let coordY = 5.0 * Math.sin(gamma);
+let coordZ = 5.0 * Math.sin(theta) * Math.cos(gamma);
 
-let front_view = lookAt([-10, 0, 0], [0, 0, 0], [0, 1, 0]);
-let top_view = lookAt([0, 10, 0], [0, 0, 0], [0, 0, -1]);
-let left_view = lookAt([0, 0, 10], [0, 0, 0], [0, 1, 0]);
-let axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
+let front_view = lookAt([-10, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+let top_view = lookAt([0.0, 10.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, -1.0]);
+let left_view = lookAt([0.0, 0.0, 10.0], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
+let axo_view = lookAt([coordX, coordY, coordZ], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 let big_view = axo_view;
 
 let isAxo = true;
 
 let projection = mat4();
 
-let zoom = 12;
+let zoom = 12.0;
 let aspect = 1.0;
 
 const STAIRWIDTH = 0.2; // Width of each stair segment
-const MAX_STEP_WIDTH = STAIRWIDTH * 8; // Influences max truck size; Recommended: 8
-const MIN_STEP_WIDTH = STAIRWIDTH * 3; // Influences min truck size; Recommended: 3
+const MAX_STEP_WIDTH = STAIRWIDTH * 8.0; // Influences max truck size; Recommended: 8
+const MIN_STEP_WIDTH = STAIRWIDTH * 3.0; // Influences min truck size; Recommended: 3
 let stepWidth = MAX_STEP_WIDTH; // Width of all ladders' steps
-const DEFAULT_STEP_NR = 8; // Starting number of steps
+const DEFAULT_STEP_NR = 8.0; // Starting number of steps
 let stepNr = DEFAULT_STEP_NR;
 
 
@@ -76,10 +76,10 @@ let canvas;
 
 
 function refreshAxoView() {
-    coordX = 5 * Math.cos(theta) * Math.cos(gamma);
-    coordY = 5 * Math.sin(gamma);
-    coordZ = 5 * Math.sin(theta) * Math.cos(gamma);
-    axo_view = lookAt([coordX, coordY, coordZ], [0, 0, 0], [0, 1, 0]);
+    coordX = 5.0 * Math.cos(theta) * Math.cos(gamma);
+    coordY = 5.0 * Math.sin(gamma);
+    coordZ = 5.0 * Math.sin(theta) * Math.cos(gamma);
+    axo_view = lookAt([coordX, coordY, coordZ], [0.0, 0.0, 0.0], [0.0, 1.0, 0.0]);
 
 }
 
@@ -282,7 +282,9 @@ function draw_scene(view) {
             multScale([stepWidth / 1.5, 1.0, stepWidth / 1.6]);
             multTranslation([-3.0 * (stepWidth - MIN_STEP_WIDTH) + stepWidth + 1.4, 0.0, 0.0]);
             // Wheels and wheel connectors
+            pushMatrix();
             chassis();
+            popMatrix();
             // Truck Base
             pushMatrix();
                 truckBase();
