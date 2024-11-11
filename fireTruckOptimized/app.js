@@ -1,26 +1,36 @@
-import { lookAt, ortho, mat4, vec3, vec4, flatten, normalMatrix } from '../../libs/MV.js';
+/*
+Computação Gráfica e Interfaces 2024-2025
+Projeto 2: Modelação e visualização duma carro de combate a incêndios
+
+Alexandre Cristóvão 65143
+Miguel Lourenço 66043
+
+app.js: Responsible for handling shaders, rendering and scene graph
+*/
+
+import { lookAt, ortho, mat4, vec4, flatten } from '../../libs/MV.js';
 import { loadShadersFromURLS, buildProgramFromSources, setupWebGL } from '../../libs/utils.js';
-import { modelView, loadMatrix, pushMatrix, popMatrix, multRotationX, multRotationZ, multRotationY, multScale, multTranslation } from '../../libs/stack.js';
+import { modelView, loadMatrix, pushMatrix, popMatrix, multRotationZ, multRotationY, multScale, multTranslation } from '../../libs/stack.js';
 
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
 
 import { chassis, cabin, waterTank, decal, lowerStair, upperStair, stairBaseRotation, stairBaseElevation, bumpers, truckBase, firehose } from './fireTruck.js';
-import { entrance, floor, poles, clock } from './scenery.js';
+import { entrance, floor, poles } from './scenery.js';
 
-export { outlineColor, program, u_color, mode, time, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, updateModelView, gl };
+export { outlineColor, program, u_color, mode, doorPos, wheelAngle, stepWidth, STAIRWIDTH, stepNr, updateModelView, gl };
 
 let u_color;
 let outlineColor = vec4(0.2, 0.2, 0.2, 1.0); // Color of the outline of an object
 
-let animation = false; // Animation is running
 let mode;
 
 let truckPos = 0.0;   // Position of truck in the x axis
 let doorPos = 6.5; // Position of the door in the y axis
 let upperLadderPos = 0.0; // Position of the upper stairs
 
+const WHEELRADIUS = 0.75;
 let wheelAngle = 0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0; // Angle of the stair base in the y axis
 let ladderInclination = 0; // Angle of the ladder in the z axis
@@ -47,18 +57,12 @@ let projection = mat4();
 let zoom = 12;
 let aspect = 1.0;
 
-let time = 0;           // Global simulation time in days
-let speed = 1 / 60.0;   // Speed (how many days added to time on each render pass
-
-const MAX_SIZE = 1.6;
-const DEFAULTSTEPNR = 8;
-let stepWidth = MAX_SIZE; // Width of all ladders' steps
-let stepNr = DEFAULTSTEPNR;
-const STAIRWIDTH = 0.2;
-const MIN_SIZE = STAIRWIDTH*3;
-
-const WHEELRADIUS = 0.75;
-
+const STAIRWIDTH = 0.2; // Width of each stair segment
+const MAX_STEP_WIDTH = STAIRWIDTH * 8; // Influences max truck size; Recommended: 8
+const MIN_STEP_WIDTH = STAIRWIDTH * 3; // Influences min truck size; Recommended: 3
+let stepWidth = MAX_STEP_WIDTH; // Width of all ladders' steps
+const DEFAULT_STEP_NR = 8; // Starting number of steps
+let stepNr = DEFAULT_STEP_NR;
 
 
 /** @type{WebGL2RenderingContext} */
@@ -107,15 +111,13 @@ function main(shaders) {
             case 'a':
                 if(truckPos > -10.5) {
                     truckPos -= 0.1;
-                    wheelAngle += 0.1/WHEELRADIUS*180/Math.PI;
-                    //console.log(wheelAngle);
+                    wheelAngle += 0.1 / WHEELRADIUS * 180 / Math.PI;
                 }
                 break;
             case 'd':
                 if (truckPos < 8.0) {
                     truckPos += 0.1;
-                    wheelAngle -= 0.1/WHEELRADIUS*180/Math.PI;
-                    console.log(wheelAngle);
+                    wheelAngle -= 0.1 / WHEELRADIUS * 180 / Math.PI;
                 }
                 break;
             case 'q':
@@ -196,15 +198,14 @@ function main(shaders) {
                     stepNr -= 1;
                 break;
             case ',':
-                if (stepWidth < MAX_SIZE)
+                if (stepWidth < MAX_STEP_WIDTH)
                     stepWidth += 0.1;
                 break;
             case '.':
-                if (stepWidth > MIN_SIZE)
+                if (stepWidth > MIN_STEP_WIDTH)
                 stepWidth -= 0.1;
                 break;
-        }
-        
+        }     
     });
     
     window.addEventListener('resize', resize);
@@ -221,14 +222,17 @@ function main(shaders) {
     window.requestAnimationFrame(render);
 }
 
+
 function updateModelView() {
     gl.uniformMatrix4fv(gl.getUniformLocation(program, "u_model_view"), false, flatten(modelView()));
 }
+
 
 function updateProjection(gl, program, projection) {
     const u_projection = gl.getUniformLocation(program, "u_projection");
     gl.uniformMatrix4fv(u_projection, false, flatten(projection));
 }
+
 
 function toggle_view_mode() { all_views = !all_views; }
 
@@ -240,11 +244,13 @@ function resize() {
     aspect = window.innerWidth / window.innerHeight;
 }
 
+
 function initialize_objects() {
     CUBE.init(gl);
     CYLINDER.init(gl);
     TORUS.init(gl);
 }
+
 
 function draw_scene(view) {
     gl.useProgram(program);
@@ -273,8 +279,8 @@ function draw_scene(view) {
     pushMatrix();
         multTranslation([1.0 + truckPos, 0.0, 1.0]);
         pushMatrix();
-            multScale([stepWidth/1.5,1,stepWidth/1.6]); //STAIRWIDTH*3
-            multTranslation([-3.0*(stepWidth-MIN_SIZE)+stepWidth+1.4,0,0]);
+            multScale([stepWidth / 1.5, 1.0, stepWidth / 1.6]);
+            multTranslation([-3.0 * (stepWidth - MIN_STEP_WIDTH) + stepWidth + 1.4, 0.0, 0.0]);
             // Wheels and wheel connectors
             chassis();
             // Truck Base
@@ -287,7 +293,7 @@ function draw_scene(view) {
         popMatrix();
         // Cabin
         pushMatrix();
-            multTranslation([-stepWidth*2.922+4.8,0,0]);
+            multTranslation([-stepWidth * 2.922 + 4.8, 0.0, 0.0]);
             cabin();
         popMatrix();
         // Water tank
@@ -300,22 +306,22 @@ function draw_scene(view) {
         popMatrix();
         // Fire Hose
         pushMatrix();
-            const sizeFH = Math.min(stepWidth*1,1);
-            multTranslation([STAIRWIDTH*7+stepWidth*2.2,3,0]);
+            const sizeFH = Math.min(stepWidth * 1.0, 1.0);
+            multTranslation([STAIRWIDTH * 7 + stepWidth * 2.2, 3.0, 0.0]);
             multScale([sizeFH,sizeFH,sizeFH]);
             firehose();
         popMatrix();
         // Stairs      
         pushMatrix();         
-            multTranslation([stepWidth*1.5,4.5,0.0]);
+            multTranslation([stepWidth * 1.5, 4.5, 0.0]);
             multRotationY(stairBaseAngle);
             stairBaseRotation();
             pushMatrix();
-                multTranslation([0.0,0.7,0.0]);
+                multTranslation([0.0, 0.7, 0.0]);
                 stairBaseElevation();
                 multRotationZ(-ladderInclination);
                 pushMatrix();
-                    multTranslation([-2.0,0.5,0.0]);
+                    multTranslation([-2.0, 0.5, 0.0]);
                     lowerStair();  
                     multTranslation([-upperLadderPos, 0.0, 0.0]);                     
                     upperStair();

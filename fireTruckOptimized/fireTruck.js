@@ -1,8 +1,20 @@
+/*
+Computação Gráfica e Interfaces 2024-2025
+Projeto 2: Modelação e visualização duma carro de combate a incêndios
+
+Alexandre Cristóvão 65143
+Miguel Lourenço 66043
+
+fireTruck.js: Responsible for creating and transforming the various truck's components
+*/
+
 import { vec4 } from "../../libs/MV.js";
 import { multRotationY, multScale, multTranslation, pushMatrix, popMatrix, multRotationX, multRotationZ } from "../../libs/stack.js";
+
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
 import * as TORUS from '../../libs/objects/torus.js';
+
 import { outlineColor, program, u_color, mode, updateModelView, wheelAngle, stepWidth,STAIRWIDTH,stepNr, gl } from "./app.js";
 
 export { wheel, wheelConnector, chassis, truckBase, bumpers, cabin, waterTank, stairBaseRotation, stairBaseElevation, lowerStair, upperStair, decalC, decalG, decalI, decalT, decalP, decal2, decal, firehose };
@@ -42,7 +54,7 @@ function wheel() {
             multRotationZ(angle);
 
             // Position and scale each spoke from the center to the rim
-            multTranslation([rimRadius / 2, 0, 0]);
+            multTranslation([rimRadius / 2.0, 0.0, 0.0]);
             multScale([rimRadius, spokeRadius, spokeRadius]);
 
             updateModelView();
@@ -126,7 +138,7 @@ function chassis() {
     //----------Chassis Cover----------//
     pushMatrix();
 
-        let color = vec4(1.0, 0.0, 0.0, 1);
+        let color = vec4(1.0, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
 
         multTranslation([0.0, 1.0, 0.0]);
@@ -147,7 +159,7 @@ function chassis() {
 //Base for the upper part of the truck
 function truckBase() {
     pushMatrix();
-        let color = vec4(1.0, 0.0, 0.0, 1);
+        let color = vec4(1.0, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
 
         multTranslation([0.0, 1.5, 0.0]);
@@ -168,7 +180,7 @@ function bumpers() {
     //----------Front Bumper----------//
     pushMatrix();
 
-        let color = vec4(1.0, 1.0, 1.0, 1);
+        let color = vec4(1.0, 1.0, 1.0, 1.0);
         gl.uniform4fv(u_color, color);
 
         multTranslation([-5.11, 1.0, 0.0]);
@@ -315,8 +327,8 @@ function cabin() {
         let color = vec4(1.0, 0.0, 0.0, 1);
         gl.uniform4fv(u_color, color);
 
-        const sizeX = stepWidth*1.4;
-        const sizeZ = stepWidth*2.6;
+        const sizeX = stepWidth * 1.4;
+        const sizeZ = stepWidth * 2.6;
 
         multTranslation([-3.7, 3.0, 0.0]);
         multScale([sizeX, 3.00, sizeZ]);
@@ -336,8 +348,8 @@ function cabin() {
         let windowColor = vec4(0.6, 0.6, 0.9, 1.0);
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-stepWidth*0.75-3.6, 3.5, 0.0]);
-        multScale([0.25, 1.5, stepWidth*2.2]);
+        multTranslation([-stepWidth * 0.75 - 3.6, 3.5, 0.0]);
+        multScale([0.25, 1.5, stepWidth * 2.2]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -347,9 +359,9 @@ function cabin() {
 
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-stepWidth*0.2-3.6, 3.5, -stepWidth*1.25]);
+        multTranslation([-stepWidth * 0.2 - 3.6, 3.5, -stepWidth * 1.25]);
         multRotationY(90);
-        multScale([0.25, 1.5, stepWidth*0.9]);
+        multScale([0.25, 1.5, stepWidth * 0.9]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -360,9 +372,9 @@ function cabin() {
 
         gl.uniform4fv(u_color, windowColor);
 
-        multTranslation([-stepWidth*0.2-3.6, 3.5, stepWidth*1.25]);
+        multTranslation([-stepWidth * 0.2 - 3.6, 3.5, stepWidth * 1.25]);
         multRotationY(90);
-        multScale([0.25, 1.5, stepWidth*0.9]);
+        multScale([0.25, 1.5, stepWidth * 0.9]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -374,7 +386,7 @@ function cabin() {
         let blinkerColor = vec4(1.0, 1.0, 0.0, 1.0);
         gl.uniform4fv(u_color, blinkerColor);
 
-        multTranslation([-stepWidth*0.75-3.6, 2.25, stepWidth*0.8]);
+        multTranslation([-stepWidth * 0.75 - 3.6, 2.25, stepWidth * 0.8]);
         multRotationZ(90);
         multScale([0.5, 0.25, 0.5]);
 
@@ -387,7 +399,7 @@ function cabin() {
 
         gl.uniform4fv(u_color, blinkerColor);
 
-        multTranslation([-stepWidth*0.75-3.6, 2.25, -stepWidth*0.8]);
+        multTranslation([-stepWidth * 0.75 - 3.6, 2.25, -stepWidth * 0.8]);
         multRotationZ(90);
         multScale([0.5, 0.25, 0.5]);
 
@@ -399,7 +411,7 @@ function cabin() {
     //------Head Lights------//
     pushMatrix();
 
-        let blueLight = vec4(0.0, 0.0, 1.0, 1);
+        let blueLight = vec4(0.0, 0.0, 1.0, 1.0);
         let redLight = vec4(1.0, 0.0, 0.0, 1.0);
         let whiteSeperator = vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -462,11 +474,11 @@ function cabin() {
 function waterTank() {
     pushMatrix();
         //Stretch cube on top of the shassis
-        let color = vec4(1.0, 0.0, 0.0, 1);
+        let color = vec4(1.0, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
 
         multTranslation([1.25, 3.0, 0.0]);
-        multScale([stepWidth*4.4, 2.5, stepWidth*2.5]);
+        multScale([stepWidth * 4.4, 2.5, stepWidth * 2.5]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -483,9 +495,9 @@ function waterTank() {
 function stairBaseRotation() {
     //Shorten cylinder on top of the waterTank (rotates)
     pushMatrix();
-        const width = stepWidth*1.5;
+        const width = stepWidth * 1.5;
 
-        let color = vec4(1.0, 0.45, 0.0, 1);
+        let color = vec4(1.0, 0.45, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
 
         multScale([width, 0.5, width]);
@@ -508,10 +520,10 @@ function stairBaseElevation() {
     pushMatrix();
         const width = stepWidth;
 
-        let color = vec4(0.3, 0.3, 0.3, 1);
+        let color = vec4(0.3, 0.3, 0.3, 1.0);
         gl.uniform4fv(u_color, color);
         
-        multScale([width,1,width]);
+        multScale([width, 1.0, width]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
@@ -524,32 +536,30 @@ function stairBaseElevation() {
 }
 
 function stair() {
-    
 
     const stairDepth = STAIRWIDTH;
     const stepCount = stepNr; // Number of steps on the lower stair (+2 is when 1st step starts)
     const stepHeight = STAIRWIDTH;
-    const stepDepth = stairDepth-0.04;
-    const stepDistance = STAIRWIDTH*2;
+    const stepDepth = stairDepth - 0.04;
+    const stepDistance = STAIRWIDTH * 2;
     const stepSpace = stepHeight + stepDistance; // Space needed for each step
-    const gap = stepWidth*1;
+    const gap = stepWidth;
     const stairHeight = stepCount * stepSpace + gap;
-    const compensationTrans = stepSpace*stepCount/2; // Adjusts stair position when stepCount changes
-    const minDistance = stepSpace -1 ; // Base stair position
+    const compensationTrans = stepSpace*stepCount / 2; // Adjusts stair position when stepCount changes
 
     pushMatrix();
 //compensationTrans/2-minDistance
         multRotationY(90);
         multRotationX(-90);
-        multTranslation([0,compensationTrans,0]);
+        multTranslation([0.0, compensationTrans, 0.0]);
 
         // Left side
         pushMatrix();
         
-            let color = vec4(0.3, 0.3, 0.3, 1);
+            let color = vec4(0.3, 0.3, 0.3, 1.0);
             gl.uniform4fv(u_color, color);
 
-            multTranslation([(stepWidth+STAIRWIDTH)/2*-1, 0, 0]);
+            multTranslation([(stepWidth + STAIRWIDTH) / 2.0 * -1.0, 0.0, 0.0]);
             multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             updateModelView();
@@ -566,7 +576,7 @@ function stair() {
         // Right side
         pushMatrix();
 
-            multTranslation([(stepWidth+STAIRWIDTH)/2, 0, 0]);
+            multTranslation([(stepWidth + STAIRWIDTH)/ 2.0 , 0.0, 0.0]);
             multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
             updateModelView();
@@ -584,7 +594,7 @@ function stair() {
         for (let i = 0; i < stepCount; i++) { // i=2 creates space for connection with stairBaseElevation
             pushMatrix();
 
-                multTranslation([0, i * stepSpace - stairHeight/2 +gap, 0]); // stairHeight/2 centers steps
+                multTranslation([0.0, i * stepSpace - stairHeight / 2.0 + gap, 0.0]); // stairHeight/2 centers steps
                 multScale([stepWidth, stepHeight, stepDepth]);
 
                 updateModelView();
@@ -606,7 +616,7 @@ function stair() {
 function lowerStair() {
     //Stair that stays in place
     pushMatrix();
-        multTranslation([1.7,-0.6,0]);
+        multTranslation([1.7, -0.6, 0.0]);
         stair();
     popMatrix();
 }
@@ -614,7 +624,7 @@ function lowerStair() {
 function upperStair() {
     //Stair that extends
     pushMatrix();
-        multTranslation([1.6,-0.4,0]);
+        multTranslation([1.6, -0.4, 0.0]);
         stair();
     popMatrix();
 }
@@ -647,7 +657,7 @@ function decalC() {
         // Left line
         pushMatrix();
 
-            multTranslation([-0.3, 0, 0]);
+            multTranslation([-0.3, 0.0, 0.0]);
             multScale([0.1, 0.6, 0.01]);
 
             updateModelView();
@@ -690,7 +700,7 @@ function decalG() {
         // Upper line
         pushMatrix();
 
-            multTranslation([-0.15, 0.3, 0]);
+            multTranslation([-0.15, 0.3, 0.0]);
             multScale([0.2, 0.2, 0.01]);
             
             updateModelView();
@@ -707,7 +717,7 @@ function decalG() {
         // Left line
         pushMatrix();
 
-            multTranslation([-0.3, 0, 0]);
+            multTranslation([-0.3, 0.0, 0.0]);
             multScale([0.1, 0.6, 0.01]);
 
             updateModelView();
@@ -724,7 +734,7 @@ function decalG() {
         // Lower line
         pushMatrix();
 
-            multTranslation([-0.15, -0.3, 0]);
+            multTranslation([-0.15, -0.3, 0.0]);
             multScale([0.2, 0.2, 0.01]);
 
             updateModelView();
@@ -758,7 +768,7 @@ function decalG() {
         // Dot
         pushMatrix();
 
-            multTranslation([-0.1, 0, 0]);
+            multTranslation([-0.1, 0.0, 0.0]);
             multScale([0.1, 0.2, 0.01]);
             
             updateModelView();
@@ -777,11 +787,11 @@ function decalG() {
 function decalI() {
     pushMatrix();
 
-        let color = vec4(0.6, 0, 0, 1.0);
+        let color = vec4(0.6, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
     
         pushMatrix();
-            multTranslation([0, 0, 0]);
+            multTranslation([0.0, 0.0, 0.0]);
             multScale([0.1, 0.8, 0.01]);
 
             updateModelView();
@@ -800,13 +810,13 @@ function decalI() {
 function decalT() {
     pushMatrix();
 
-        let color = vec4(0.6, 0, 0, 1.0);
+        let color = vec4(0.6, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
     
         // Upper line
         pushMatrix();
 
-            multTranslation([0, 0.8, 0]);
+            multTranslation([0.0, 0.8, 0.0]);
             multScale([2.0, 0.4, 0.01]);
 
             updateModelView();
@@ -823,7 +833,7 @@ function decalT() {
         // Middle line
         pushMatrix();
 
-            multTranslation([0, 0, 0]);
+            multTranslation([0.0, 0.0, 0.0]);
             multScale([0.4, 2.0, 0.01]);
             
             updateModelView();
@@ -843,13 +853,13 @@ function decalT() {
 function decalP() {
     pushMatrix();
 
-        let color = vec4(0.6, 0, 0, 1.0);            
+        let color = vec4(0.6, 0.0, 0.0, 1.0);            
         gl.uniform4fv(u_color, color);
     
         // Vertical line
         pushMatrix();
 
-            multTranslation([-0.8, 0, 0]);
+            multTranslation([-0.8, 0.0, 0.0]);
             multScale([0.4, 2.0, 0.01]);
             
             updateModelView();
@@ -866,7 +876,7 @@ function decalP() {
         // Upper horizontal line
         pushMatrix();
 
-            multTranslation([0, 0.8, 0]);
+            multTranslation([0.0, 0.8, 0.0]);
             multScale([1.2, 0.4, 0.01]);
 
             updateModelView();
@@ -883,7 +893,7 @@ function decalP() {
         // Right vertical line
         pushMatrix();
 
-            multTranslation([0.8, 0.4, 0]);
+            multTranslation([0.8, 0.4, 0.0]);
             multScale([0.4, 1.2, 0.01]);
 
             updateModelView();
@@ -900,7 +910,7 @@ function decalP() {
         // Bottom horizontal line
         pushMatrix();
 
-            multTranslation([0, 0, 0]);
+            multTranslation([0.0, 0.0, 0.0]);
             multScale([1.2, 0.4, 0.01]);
 
             updateModelView();
@@ -920,13 +930,13 @@ function decalP() {
 function decal2() {
     pushMatrix();
 
-        let color = vec4(0.6, 0, 0, 1.0);
+        let color = vec4(0.6, 0.0, 0.0, 1.0);
         gl.uniform4fv(u_color, color);
     
         // Top line
         pushMatrix();
 
-            multTranslation([0, 0.8, 0]);
+            multTranslation([0.0, 0.8, 0.0]);
             multScale([2.0, 0.4, 0.01]);
 
             updateModelView();
@@ -943,7 +953,7 @@ function decal2() {
         // Right line top
         pushMatrix();
 
-            multTranslation([0.8, 0.4, 0]);
+            multTranslation([0.8, 0.4, 0.0]);
             multScale([0.4, 1.2, 0.01]);
 
             updateModelView();
@@ -960,7 +970,7 @@ function decal2() {
         // Middle line
         pushMatrix();
 
-            multTranslation([0, 0, 0]);
+            multTranslation([0.0, 0.0, 0.0]);
             multScale([2.0, 0.4, 0.01]);
 
             updateModelView();
@@ -976,7 +986,7 @@ function decal2() {
     
         // Left line bottom
         pushMatrix();
-            multTranslation([-0.8, -0.4, 0]);
+            multTranslation([-0.8, -0.4, 0.0]);
             multScale([0.4, 1.2, 0.01]);
 
             updateModelView();
@@ -1014,13 +1024,13 @@ function firehose() {
 
     pushMatrix();
 
-    let color = vec4(1, 1, 1, 1.0);
+    let color = vec4(1.0, 1.0, 1.0, 1.0);
     gl.uniform4fv(u_color, color);
     
         // Outer Torus
         pushMatrix();
 
-            multTranslation([0, 0, 0]);
+            multTranslation([0.0, 0.0, 0.0]);
             multRotationX(90);
             multRotationZ(90);
             multScale([1.5, 0.8, 1.5]);
@@ -1038,7 +1048,7 @@ function firehose() {
 
         // Inner Torus
         pushMatrix();
-            multTranslation([0.1, 0, 0]);
+            multTranslation([0.1, 0.0, 0.0]);
             multRotationX(90);
             multRotationZ(90);
             multScale([0.75, 0.8 , 0.75]);
@@ -1057,7 +1067,7 @@ function firehose() {
         // Inner inner Torus
         pushMatrix();
 
-            multTranslation([0.2, 0, 0]);
+            multTranslation([0.2, 0.0, 0.0]);
             multRotationX(90);
             multRotationZ(90);
             multScale([0.3575, 0.8 , 0.3575]);
@@ -1075,7 +1085,7 @@ function firehose() {
         // Hose
         pushMatrix();
 
-            multTranslation([0.4, 0, 0]);
+            multTranslation([0.4, 0.0, 0.0]);
             multRotationX(90);
             multRotationZ(90);
             multScale([0.2, 0.2 , 0.2]);
@@ -1095,39 +1105,39 @@ function firehose() {
 
 //Assemble all decals on the truck
 function decal() {
-    //Math.min(stepWidth*0.2+1,stepWidth*0.2)
-    const size = Math.min(stepWidth*0.6,1);
+
+    const size = Math.min(stepWidth * 0.6, 1.0);
 
     pushMatrix();
 
-        multTranslation([1.35, 3,stepWidth*1.25]);
+        multTranslation([1.35, 3.0, stepWidth * 1.25]);
         multScale([7.0, 2.5, 4.0]); // keeps proportions as intended
-        multScale([size,size,1]);
+        multScale([size, size, 1.0]);
 
         pushMatrix();
-            multTranslation([-0.1,0,0]);
+            multTranslation([-0.1,0.0,0.0]);
             decalC();
         popMatrix();
 
         pushMatrix();
-            multTranslation([0.23,0,0]);
+            multTranslation([0.23,0.0,0.0]);
             decalG();
         popMatrix();
 
         pushMatrix();
-            multTranslation([0.33,0,0]);
+            multTranslation([0.33,0.0,0.0]);
             decalI();
         popMatrix();
     popMatrix();
 
     pushMatrix();
 
-        multTranslation([1.3, 3 ,stepWidth*-1.25]);
-        multScale([-1,1,1]);
-        multScale([size,size,1]);
+        multTranslation([1.3, 3.0 ,stepWidth * -1.25]);
+        multScale([-1.0, 1.0, 1.0]);
+        multScale([size, size, 1.0]);
 
         pushMatrix();
-            multTranslation([-2.2, 0,0]);
+            multTranslation([-2.2, 0.0, 0.0]);
             decalT();
         popMatrix();
 
@@ -1136,12 +1146,9 @@ function decal() {
         popMatrix();
 
         pushMatrix();
-            multTranslation([2.2, 0,0]);
+            multTranslation([2.2, 0.0, 0.0]);
             decal2();
         popMatrix();
 
     popMatrix();
-
-
-
 }

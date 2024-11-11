@@ -1,8 +1,20 @@
+/*
+Computação Gráfica e Interfaces 2024-2025
+Projeto 2: Modelação e visualização duma carro de combate a incêndios
+
+Alexandre Cristóvão 65143
+Miguel Lourenço 66043
+
+scenery.js: Responsible for creating and transforming scene's and truck's accessory components
+*/
+
 import { vec4 } from "../../libs/MV.js";
 import { multRotationY, multScale, multTranslation, pushMatrix, popMatrix, multRotationX, multRotationZ } from "../../libs/stack.js";
+
 import * as CUBE from '../../libs/objects/cube.js';
 import * as CYLINDER from '../../libs/objects/cylinder.js';
-import { outlineColor, program, u_color, mode, updateModelView, time, doorPos, gl } from "./app.js";
+
+import { outlineColor, program, u_color, mode, updateModelView, doorPos, gl } from "./app.js";
 
 export { floor, poles, entrance, clock };
 
@@ -36,10 +48,10 @@ function floor() {
 //Poles that the fire fighters use to descend to the fire truck
 function poles() {
     //Bases
-    pushMatrix();
+    let baseColor = vec4(0.1, 0.1, 0.1, 1.0);
+    gl.uniform4fv(u_color, baseColor);
 
-        let baseColor = vec4(0.1, 0.1, 0.1, 1.0);
-        gl.uniform4fv(u_color, baseColor);
+    pushMatrix();
 
         multTranslation([-6.0, 0.0, -8.0]);
         multScale([2.0, 0.2, 2.0]);
@@ -51,8 +63,6 @@ function poles() {
 
     pushMatrix();
 
-        gl.uniform4fv(u_color, baseColor);
-
         multTranslation([6.0, 0.0, -8.0]);
         multScale([2.0, 0.2, 2.0]);
 
@@ -61,22 +71,19 @@ function poles() {
 
     popMatrix();
 
+    let poleColor = vec4(0.7, 0.7, 0.7, 1.0);
+    gl.uniform4fv(u_color, poleColor);
+
     //Poles
     pushMatrix();
-
-        let poleColor = vec4(0.7, 0.7, 0.7, 1.0);
-        gl.uniform4fv(u_color, poleColor);
 
         multTranslation([-6.0, 5.0, -8.0]);
         multScale([0.5, 10.0, 0.5]);
 
         updateModelView();
         CYLINDER.draw(gl, program, mode);
+
     popMatrix();
-
-    pushMatrix();
-
-        gl.uniform4fv(u_color, poleColor);
 
         multTranslation([6.0, 5.0, -8.0]);
         multScale([0.5, 10.0, 0.5]);
@@ -84,14 +91,14 @@ function poles() {
         updateModelView();
         CYLINDER.draw(gl, program, mode);
 
-    popMatrix();
 }
 
 function elevatingDoor() {
+    
+    let doorBorderColor = vec4(1.0, 1.0, 1.0, 1.0);
+    gl.uniform4fv(u_color, doorBorderColor);
+    
     pushMatrix();
-
-        let doorBorderColor = vec4(1.0, 1.0, 1.0, 1.0);
-        gl.uniform4fv(u_color, doorBorderColor);
 
         multTranslation([0.0, -0.85, 0.0]);
         multRotationX(90);
@@ -102,12 +109,15 @@ function elevatingDoor() {
 
     popMatrix();
 
+    
     let plackPos = -1.5;
+
+    let doorColor = vec4(0.5, 0.5, 0.5, 1.0);
+
     for(let i = 0; i < 5; i++) {  
         plackPos += 1.5;
         pushMatrix();
 
-            let doorColor = vec4(0.5, 0.5, 0.5, 1.0);
             gl.uniform4fv(u_color, doorColor);
 
             multTranslation([0.0, plackPos, 0.0]);
@@ -116,23 +126,23 @@ function elevatingDoor() {
             updateModelView();
             CUBE.draw(gl, program, mode);
 
-            pushMatrix();
-                gl.uniform4fv(u_color, outlineColor);
-                CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
-            popMatrix();
+
+            gl.uniform4fv(u_color, outlineColor);
+            CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+
+
 
         popMatrix();
     }
 }
 
 function clock() {
-    multTranslation([0.2,0,0]);
     pushMatrix();
 
-        let clockBorderColor = vec4(0.1, 0.1, 0.1, 1);
+        let clockBorderColor = vec4(0.1, 0.1, 0.1, 1.0);
         gl.uniform4fv(u_color, clockBorderColor);
 
-        multTranslation([0.0, 6.0, 8.0]);
+        multTranslation([0.2, 6.0, 8.0]);
         multRotationZ(90);
         multScale([2.2, 0.1, 2.2]);
 
@@ -146,7 +156,7 @@ function clock() {
         let clockInteriorColor = vec4(1.0, 1.0, 1.0, 1);
         gl.uniform4fv(u_color, clockInteriorColor);
 
-        multTranslation([0.01, 6.0, 8.0]);
+        multTranslation([0.21, 6.0, 8.0]);
         multRotationZ(90);
         multScale([1.75, 0.1, 1.75]);
 
@@ -159,7 +169,7 @@ function clock() {
 
         gl.uniform4fv(u_color, clockBorderColor);
 
-        multTranslation([0.02, 6.0, 8.0]);
+        multTranslation([0.22, 6.0, 8.0]);
         multRotationZ(90);
         multScale([0.1, 0.1, 0.1]);
 
@@ -172,17 +182,18 @@ function clock() {
         const hours = now.getHours();
 
         // Calculate angles for hands
-        const secondAngle = (seconds / 60) * 2 * Math.PI;
-        const minuteAngle = (minutes / 60) * 2 * Math.PI + (secondAngle / 60);
-        const hourAngle = (hours / 12) * 2 * Math.PI + (minuteAngle / 12);
+        const secondAngle = (seconds / 60) * 2 * Math.PI; // Radians
+        const minuteAngle = (minutes / 60) * 2 * Math.PI + (secondAngle / 60); // Radians
+        const hourAngle = (hours / 12) * 2 * Math.PI + (minuteAngle / 12); // Radians
 
         //Clock hands
         //Hour hand
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
-            multTranslation([Math.cos(hourAngle)*2,-1,Math.sin(hourAngle)*-2]);
-            multRotationY(hourAngle/Math.PI*180);
+
+            multTranslation([Math.cos(hourAngle) * 2, -1.0, Math.sin(hourAngle) * -2]); //Moves the hours hand
+            multRotationY(hourAngle / Math.PI * 180); // Converts radians to degrees
             multScale([4.0, 0.4, 1.0]);
 
             updateModelView();
@@ -194,11 +205,10 @@ function clock() {
         pushMatrix();
 
             gl.uniform4fv(u_color, clockBorderColor);
-            multTranslation([Math.cos(minuteAngle)*3,-1,Math.sin(minuteAngle)*-3]);
 
-            multRotationY(minuteAngle/Math.PI*180);
+            multTranslation([Math.cos(minuteAngle) * 3, -1, Math.sin(minuteAngle) * -3]); //Moves the minutes hand
+            multRotationY(minuteAngle / Math.PI * 180); // Converts radians to degrees
             multScale([6.0, 0.4, 0.75]);
-
 
             updateModelView();
             CUBE.draw(gl, program, mode);
@@ -210,9 +220,9 @@ function clock() {
 
             gl.uniform4fv(u_color, clockBorderColor);
 
-            multTranslation([Math.cos(secondAngle)*4,-1,Math.sin(secondAngle)*-4]);
-            multRotationY(secondAngle/Math.PI*180);
-            multScale([8, 0.4, 0.5]);
+            multTranslation([Math.cos(secondAngle) * 4, -1, Math.sin(secondAngle) * -4]); //Moves the seconds hand
+            multRotationY(secondAngle/Math.PI*180); // Converts radians to degrees
+            multScale([8.0, 0.4, 0.5]);
 
 
             updateModelView();
@@ -232,7 +242,7 @@ function entrance() {
         gl.uniform4fv(u_color, wallColor);
 
         multTranslation([-12.5, 11.0, -0.4]);
-        multScale([0.2, 7, 25.0]);
+        multScale([0.2, 7.0, 25.0]);
 
         updateModelView();
         CUBE.draw(gl, program, mode);
