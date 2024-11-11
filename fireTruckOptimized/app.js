@@ -57,6 +57,8 @@ let stepNr = DEFAULTSTEPNR;
 const STAIRWIDTH = 0.2;
 const MIN_SIZE = STAIRWIDTH*3;
 
+const WHEELRADIUS = 0.75;
+
 
 
 /** @type{WebGL2RenderingContext} */
@@ -103,14 +105,18 @@ function main(shaders) {
                 break;
 
             case 'a':
-                if(truckPos > -10.5)
+                if(truckPos > -10.5) {
                     truckPos -= 0.1;
-                    wheelAngle += 2.0;
+                    wheelAngle += 0.1/WHEELRADIUS*180/Math.PI;
+                    //console.log(wheelAngle);
+                }
                 break;
             case 'd':
-                if (truckPos < 8.0)
+                if (truckPos < 8.0) {
                     truckPos += 0.1;
-                    wheelAngle -= 2.0;
+                    wheelAngle -= 0.1/WHEELRADIUS*180/Math.PI;
+                    console.log(wheelAngle);
+                }
                 break;
             case 'q':
                 stairBaseAngle += 1;
