@@ -35,6 +35,15 @@ let wheelAngle = 0.0; // Angle of a wheel in the z axis
 let stairBaseAngle = 0.0; // Angle of the stair base in the y axis
 let ladderInclination = 0.0; // Angle of the ladder in the z axis
 
+const STAIRWIDTH = 0.2; // Width of each stair segment
+const MAX_STEP_WIDTH = STAIRWIDTH * 8.0; // Influences max truck size; Recommended: 8
+const MIN_STEP_WIDTH = STAIRWIDTH * 3.0; // Influences min truck size; Recommended: 3
+let stepWidth = MAX_STEP_WIDTH; // Width of all ladders' steps
+const DEFAULT_STEP_NR = 8.0; // Starting number of steps
+let stepNr = DEFAULT_STEP_NR; // Number of steps in the stairs
+
+const sizeFH = Math.min(stepWidth * 1.0, 1.0); // Size of the fire hose
+
 let all_views = false;
 
 let theta = 10.0; // Horizontal camera angle of the axonometric projection
@@ -56,15 +65,6 @@ let projection = mat4();
 
 let zoom = 12.0;
 let aspect = 1.0;
-
-const STAIRWIDTH = 0.2; // Width of each stair segment
-const MAX_STEP_WIDTH = STAIRWIDTH * 8.0; // Influences max truck size; Recommended: 8
-const MIN_STEP_WIDTH = STAIRWIDTH * 3.0; // Influences min truck size; Recommended: 3
-let stepWidth = MAX_STEP_WIDTH; // Width of all ladders' steps
-const DEFAULT_STEP_NR = 8.0; // Starting number of steps
-let stepNr = DEFAULT_STEP_NR; // Number of steps in the stairs
-const sizeFH = Math.min(stepWidth * 1.0, 1.0); // Size of the fire hose
-
 
 /** @type{WebGL2RenderingContext} */
 let gl;
