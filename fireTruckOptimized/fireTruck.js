@@ -522,14 +522,14 @@ function stair() {
 
     // Right side
 
-        multTranslation([(stepWidth + STAIRWIDTH)/ 2.0 , 0.0, 0.0]);
-        multScale([STAIRWIDTH, stairHeight, stairDepth]);
+    multTranslation([(stepWidth + STAIRWIDTH)/ 2.0 , 0.0, 0.0]);
+    multScale([STAIRWIDTH, stairHeight, stairDepth]);
 
-        updateModelView();
-        CUBE.draw(gl, program, mode);
+    updateModelView();
+    CUBE.draw(gl, program, mode);
 
-        gl.uniform4fv(u_color, outlineColor);
-        CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
+    gl.uniform4fv(u_color, outlineColor);
+    CUBE.draw(gl, program, gl.LINES); // Draw cube outline in wireframe
 }
 
 
